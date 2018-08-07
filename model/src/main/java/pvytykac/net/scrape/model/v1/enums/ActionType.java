@@ -6,6 +6,6 @@ package pvytykac.net.scrape.model.v1.enums;
  */
 public enum ActionType {
 
-    TASK_TYPE_TIMEOUT
+    IGNORE_TASK_TYPE
 
 }

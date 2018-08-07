@@ -4,10 +4,20 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableList;
+import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableMap;
+import static pvytykac.net.scrape.model.ModelBuilderUtil.buildOptional;
 
 
 /**
@@ -28,27 +38,27 @@ public class ModelBuilderUtilTest {
     @Test
     public void buildOptionalPresent() throws Exception {
         Object object = new Object();
-        Object result = ModelBuilderUtil.buildOptional(Optional.of(new TestBuilder(object)));
+        Object result = buildOptional(Optional.of(new TestBuilder(object)));
 
         assertThat(result, is(object));
     }
 
     @Test
     public void buildOptionalAbsent() throws Exception {
-        Object result = ModelBuilderUtil.buildOptional(Optional.empty());
+        Object result = buildOptional(Optional.empty());
 
         assertThat(result, nullValue());
     }
 
     @Test
     public void asImmutableMapNull() throws Exception {
-        assertThat(ModelBuilderUtil.asImmutableMap(null), nullValue());
+        assertThat(asImmutableMap(null), nullValue());
     }
 
     @Test
     public void asImmutableMapNonNull() throws Exception {
         Map<String, String> original = new HashMap<>(Collections.singletonMap("a", "b"));
-        Map<String, String> immutable = ModelBuilderUtil.asImmutableMap(original);
+        Map<String, String> immutable = asImmutableMap(original);
 
         assertThat(immutable, is(original));
 
@@ -61,13 +71,13 @@ public class ModelBuilderUtilTest {
 
     @Test
     public void asImmutableListNull() throws Exception {
-        assertThat(ModelBuilderUtil.asImmutableList(null), nullValue());
+        assertThat(asImmutableList(null), nullValue());
     }
 
     @Test
     public void asImmutableListNonNull() throws Exception {
         List<String> original = new ArrayList<>(Collections.singletonList("a"));
-        List<String> immutable = ModelBuilderUtil.asImmutableList(original);
+        List<String> immutable = asImmutableList(original);
 
         assertThat(immutable, is(original));
 

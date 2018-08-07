@@ -21,7 +21,7 @@ public class PostScrapeActionTest extends JsonTest {
     @Test
     public void serialize() throws Exception {
         PostScrapeAction action = new PostScrapeAction.PostScrapeActionBuilder()
-                .withActionType(ActionType.TASK_TYPE_TIMEOUT)
+                .withActionType(ActionType.IGNORE_TASK_TYPE)
                 .withParameters(Collections.singletonMap("a", "b"))
                 .build();
 
@@ -34,7 +34,7 @@ public class PostScrapeActionTest extends JsonTest {
     @Test
     public void deserialize() throws Exception {
         JSONObject json = new JSONObject()
-                .put("actionType", "TASK_TYPE_TIMEOUT")
+                .put("actionType", "IGNORE_TASK_TYPE")
                 .put("parameters", new JSONObject());
 
         PostScrapeAction action = deserialize(json, PostScrapeAction.class);
