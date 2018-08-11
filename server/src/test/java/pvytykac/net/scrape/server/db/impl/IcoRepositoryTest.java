@@ -43,6 +43,7 @@ public class IcoRepositoryTest extends DbTest {
 
         assertThat(ico, notNullValue());
         assertThat(ico.getIco(), is(ICO_A));
+        assertThat(ico.getForm(), is(105));
         assertThat(ico.getLastUpdated(), notNullValue());
 
         DateTime now = DateTime.now(DateTimeZone.UTC);
@@ -58,6 +59,7 @@ public class IcoRepositoryTest extends DbTest {
         assertThat(list.size(), is(1));
 
         assertThat(list.get(0).getIco(), is(ICO_A));
+        assertThat(list.get(0).getForm(), is(105));
         assertThat(list.get(0).getLastUpdated(), is(DateTime.parse("2015-01-06T00:01:02.999")));
     }
 
@@ -69,6 +71,7 @@ public class IcoRepositoryTest extends DbTest {
         assertThat(list.size(), is(1));
 
         assertThat(list.get(0).getIco(), is(ICO_B));
+        assertThat(list.get(0).getForm(), is(101));
         assertThat(list.get(0).getLastUpdated(), is(DateTime.parse("2016-07-09T01:02:03.111")));
     }
 }

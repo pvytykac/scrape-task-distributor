@@ -5,6 +5,7 @@ import pvytykac.net.scrape.model.v1.enums.TaskType;
 import pvytykac.net.scrape.server.db.model.Ico;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -14,8 +15,8 @@ import java.util.stream.Stream;
  */
 public interface IcoQueue extends Managed {
 
-    Stream<String> dequeue(Integer limit);
+    Optional<Ico> dequeue();
 
-    boolean returnToQueue(String ico);
+    boolean returnToQueue(Ico ico);
 
 }

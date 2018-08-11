@@ -19,17 +19,17 @@ public class Ico {
     private String ico;
 
     @Column
+    private Integer form;
+
+    @Column
     private DateTime lastUpdated;
-
-    private Ico() {}
-
-    public Ico(String ico, DateTime lastUpdated) {
-        this.ico = ico;
-        this.lastUpdated = lastUpdated;
-    }
 
     public String getIco() {
         return ico;
+    }
+
+    public Integer getForm() {
+        return form;
     }
 
     public DateTime getLastUpdated() {

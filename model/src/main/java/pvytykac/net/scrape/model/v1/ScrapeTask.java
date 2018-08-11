@@ -1,6 +1,7 @@
 package pvytykac.net.scrape.model.v1;
 
 import pvytykac.net.scrape.model.ModelBuilder;
+import pvytykac.net.scrape.model.v1.enums.TaskType;
 
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableMap;
 public final class ScrapeTask {
 
     private String taskUuid;
+    private TaskType taskType;
     private Map<String, String> parameters;
     private List<ScrapeStep> steps;
 
@@ -26,10 +28,15 @@ public final class ScrapeTask {
         this.taskUuid = builder.getTaskUuid();
         this.parameters = builder.getParameters();
         this.steps = builder.getSteps();
+        this.taskType = builder.getTaskType();
     }
 
     public String getTaskUuid() {
         return taskUuid;
+    }
+
+    public TaskType getTaskType() {
+        return taskType;
     }
 
     public Map<String, String> getParameters() {
@@ -43,11 +50,16 @@ public final class ScrapeTask {
     public static final class ScrapeTaskBuilder implements ModelBuilder<ScrapeTask> {
         
         private String taskUuid;
+        private TaskType taskType;
         private Map<String, String> parameters;
         private List<ScrapeStep> steps;
 
         private String getTaskUuid() {
             return taskUuid;
+        }
+
+        public TaskType getTaskType() {
+            return taskType;
         }
 
         private Map<String, String> getParameters() {
@@ -56,6 +68,11 @@ public final class ScrapeTask {
 
         private List<ScrapeStep> getSteps() {
             return steps;
+        }
+
+        public ScrapeTaskBuilder withTaskType(TaskType taskType) {
+            this.taskType = taskType;
+            return this;
         }
 
         public ScrapeTaskBuilder withTaskUuid(String taskUuid) {

@@ -13,7 +13,7 @@ import java.util.stream.Stream;
  */
 public interface TaskQueue {
 
-    Stream<ScrapeTask> dequeue(Set<TaskType> ignoredTypes, Integer limit);
+    List<ScrapeTask> dequeue(Set<TaskType> ignoredTypes, Integer limit);
 
     void returnToQueue(ScrapeTask task);
 

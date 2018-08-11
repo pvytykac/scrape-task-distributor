@@ -40,8 +40,7 @@ public class TaskFacadeImpl implements TaskFacade {
 
     @Override
     public Optional<ScrapeTaskRepresentation> getScrapeTasks(Set<TaskType> ignoredTypes, Integer limit) {
-        List<ScrapeTask> dequeued = taskQueue.dequeue(ignoredTypes, limit)
-                .collect(Collectors.toList());
+        List<ScrapeTask> dequeued = taskQueue.dequeue(ignoredTypes, limit);
 
         Optional<ScrapeTaskRepresentation> tasks = (dequeued == null || dequeued.isEmpty())
                 ? Optional.empty()

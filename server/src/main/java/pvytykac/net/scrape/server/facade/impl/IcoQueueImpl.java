@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -33,7 +34,7 @@ public class IcoQueueImpl implements IcoQueue {
     private static final Logger LOG = LoggerFactory.getLogger(IcoQueueImpl.class);
     private static final int QUEUE_SIZE = 100;
 
-    private final Queue<String> queue;
+    private final Queue<Ico> queue;
     private final IcoFetcher fetcher;
 
     public IcoQueueImpl(IcoRepository icoRepository, SessionManager sessionManager) {
@@ -42,26 +43,14 @@ public class IcoQueueImpl implements IcoQueue {
     }
 
     @Override
-    public Stream<String> dequeue(Integer limit) {
+    public Optional<Ico> dequeue() {
         synchronized (queue) {
-            Stream.Builder builder = Stream.builder();
-
-            for (int i = 0; i < limit; i++) {
-                String dequeued = queue.poll();
-
-                if (dequeued == null) {
-                    break;
-                }
-
-                builder.add(dequeued);
-            }
-
-            return builder.build();
+            return Optional.ofNullable(queue.poll());
         }
     }
 
     @Override
-    public boolean returnToQueue(String ico) {
+    public boolean returnToQueue(Ico ico) {
         synchronized (this) {
             return queue.contains(ico) || queue.offer(ico);
         }
@@ -83,11 +72,11 @@ public class IcoQueueImpl implements IcoQueue {
 
         private final IcoRepository icoRepository;
         private final SessionManager sessionManager;
-        private final Queue<String> queue;
+        private final Queue<Ico> queue;
         private final ScheduledExecutorService executor;
         private String ico = null;
 
-        public IcoFetcher(IcoRepository icoRepository, SessionManager sessionManager, Queue<String> queue) {
+        public IcoFetcher(IcoRepository icoRepository, SessionManager sessionManager, Queue<Ico> queue) {
             this.icoRepository = icoRepository;
             this.sessionManager = sessionManager;
             this.queue = queue;
@@ -100,15 +89,13 @@ public class IcoQueueImpl implements IcoQueue {
                 sessionManager.setUpHibernateSession();
                 synchronized (queue) {
                     if (queue.size() <= FETCH_THRESHOLD) {
-                        List<String> icoList = icoRepository.list(50, ico)
-                                .stream()
-                                .map(Ico::getIco)
-                                .collect(toList());
+                        List<Ico> icoList = icoRepository.list(50, ico);
 
                         if (icoList.isEmpty()) {
                             ico = null;
                         } else {
                             queue.addAll(icoList);
+                            ico = icoList.get(icoList.size() - 1).getIco();
                         }
                     }
                 }
