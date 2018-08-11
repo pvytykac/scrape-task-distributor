@@ -16,13 +16,17 @@ import java.util.TimeZone;
 public class DbTest extends AppTest {
 
     private SessionFactory sessionFactory = requireBean(SessionFactory.class);
-    private Session session;
+    protected Session session;
+
+    static {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    }
 
     @Before
     public void setUpHibernateSession() throws Exception {
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         session = sessionFactory.openSession();
         ManagedSessionContext.bind(session);
+        session.beginTransaction();
     }
 
     @After
@@ -31,6 +35,5 @@ public class DbTest extends AppTest {
         session.close();
         ManagedSessionContext.unbind(sessionFactory);
         session = null;
-        TimeZone.setDefault(null);
     }
 }

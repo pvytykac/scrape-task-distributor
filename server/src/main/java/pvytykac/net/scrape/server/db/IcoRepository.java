@@ -10,8 +10,8 @@ import java.util.List;
  */
 public interface IcoRepository {
 
-    List<Ico> list(int limit, int offset);
+    List<Ico> list(int limit, String offsetIco);
 
-    void save(Ico ico);
+    boolean updateLastUpdated(String ico);
 
 }

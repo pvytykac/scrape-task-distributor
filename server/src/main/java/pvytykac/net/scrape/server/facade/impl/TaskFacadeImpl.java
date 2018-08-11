@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Paly
@@ -39,7 +40,8 @@ public class TaskFacadeImpl implements TaskFacade {
 
     @Override
     public Optional<ScrapeTaskRepresentation> getScrapeTasks(Set<TaskType> ignoredTypes, Integer limit) {
-        List<ScrapeTask> dequeued = taskQueue.dequeue(ignoredTypes, limit);
+        List<ScrapeTask> dequeued = taskQueue.dequeue(ignoredTypes, limit)
+                .collect(Collectors.toList());
 
         Optional<ScrapeTaskRepresentation> tasks = (dequeued == null || dequeued.isEmpty())
                 ? Optional.empty()

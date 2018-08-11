@@ -5,6 +5,7 @@ import pvytykac.net.scrape.model.v1.enums.TaskType;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * @author Paly
@@ -12,7 +13,7 @@ import java.util.Set;
  */
 public interface TaskQueue {
 
-    List<ScrapeTask> dequeue(Set<TaskType> ignoredTypes, Integer limit);
+    Stream<ScrapeTask> dequeue(Set<TaskType> ignoredTypes, Integer limit);
 
     void returnToQueue(ScrapeTask task);
 

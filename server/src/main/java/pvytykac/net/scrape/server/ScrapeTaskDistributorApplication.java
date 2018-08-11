@@ -7,6 +7,7 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.hibernate.SessionFactory;
 import pvytykac.net.scrape.server.db.IcoRepository;
+import pvytykac.net.scrape.server.db.SessionManager;
 import pvytykac.net.scrape.server.db.impl.IcoRepositoryImpl;
 import pvytykac.net.scrape.server.db.model.Ico;
 import pvytykac.net.scrape.server.facade.TaskQueue;
@@ -44,9 +45,10 @@ public class ScrapeTaskDistributorApplication extends Application<ScrapeTaskDist
     @Override
     public void run(ScrapeTaskDistributorConfiguration configuration, Environment environment) throws Exception {
         SessionFactory sessionFactory = hibernate.getSessionFactory();
+        SessionManager sessionManager = new SessionManager(sessionFactory);
         IcoRepository icoRepository = new IcoRepositoryImpl(sessionFactory);
 
-        IcoQueue icoQueue = new IcoQueueImpl(icoRepository);
+        IcoQueue icoQueue = new IcoQueueImpl(icoRepository, sessionManager);
         TaskQueue taskQueue = new TaskQueueImpl(icoQueue, configuration.getScrapeTaskConfiguration());
 
         TaskResultProcessor taskResultProcessor = new TaskResultProcessorImpl();
@@ -56,6 +58,10 @@ public class ScrapeTaskDistributorApplication extends Application<ScrapeTaskDist
 
         environment.getApplicationContext().addBean(sessionFactory);
         environment.getApplicationContext().addBean(icoRepository);
+        environment.getApplicationContext().addBean(sessionManager);
+
+        environment.lifecycle().manage(icoQueue);
+
         environment.jersey().register(taskResource);
     }
 

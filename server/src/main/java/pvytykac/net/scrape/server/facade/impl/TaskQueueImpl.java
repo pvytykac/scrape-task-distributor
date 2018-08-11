@@ -10,7 +10,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.Stream;
+
+import com.google.common.collect.ImmutableMap;
 
 /**
  * @author Paly
@@ -27,8 +31,13 @@ public class TaskQueueImpl implements TaskQueue {
     }
 
     @Override
-    public List<ScrapeTask> dequeue(Set<TaskType> ignoredTypes, Integer limit) {
-        return Collections.emptyList();
+    public Stream<ScrapeTask> dequeue(Set<TaskType> ignoredTypes, Integer limit) {
+        return icoQueue.dequeue(1)
+                .map(ico -> new ScrapeTask.ScrapeTaskBuilder()
+                        .withTaskUuid(UUID.randomUUID().toString())
+                        .withParameters(ImmutableMap.of("ico", ico))
+                        .withSteps(Collections.emptyList())
+                        .build());
     }
 
     @Override
