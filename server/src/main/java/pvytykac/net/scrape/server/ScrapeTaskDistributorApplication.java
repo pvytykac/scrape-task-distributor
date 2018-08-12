@@ -1,6 +1,5 @@
 package pvytykac.net.scrape.server;
 
-import com.codahale.metrics.MetricRegistry;
 import io.dropwizard.Application;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.hibernate.HibernateBundle;
@@ -11,7 +10,7 @@ import pvytykac.net.scrape.server.db.IcoRepository;
 import pvytykac.net.scrape.server.db.SessionManager;
 import pvytykac.net.scrape.server.db.impl.IcoRepositoryImpl;
 import pvytykac.net.scrape.server.db.model.Ico;
-import pvytykac.net.scrape.server.resources.ScrapeTypeResource;
+import pvytykac.net.scrape.server.resources.ScrapeTypesResource;
 import pvytykac.net.scrape.server.service.ScrapeTaskService;
 import pvytykac.net.scrape.server.service.ScrapeResultService;
 import pvytykac.net.scrape.server.service.ScrapeTypeService;
@@ -22,7 +21,7 @@ import pvytykac.net.scrape.server.service.impl.TaskQueueImpl;
 import pvytykac.net.scrape.server.service.impl.ScrapeResultServiceImpl;
 import pvytykac.net.scrape.server.service.impl.TaskDistributionFacadeImpl;
 import pvytykac.net.scrape.server.service.impl.IcoServiceImpl;
-import pvytykac.net.scrape.server.resources.ScrapeTaskResource;
+import pvytykac.net.scrape.server.resources.ScrapeTasksResource;
 
 /**
  * @author Paly
@@ -65,8 +64,8 @@ public class ScrapeTaskDistributorApplication extends Application<ScrapeTaskDist
                 scrapeTaskService, scrapeResultService);
 
         // resources
-        environment.jersey().register(new ScrapeTaskResource(taskDistributionFacade));
-        environment.jersey().register(new ScrapeTypeResource(scrapeTypeService));
+        environment.jersey().register(new ScrapeTasksResource(taskDistributionFacade));
+        environment.jersey().register(new ScrapeTypesResource(scrapeTypeService));
 
         // bean registration
         environment.getApplicationContext().addBean(sessionFactory);

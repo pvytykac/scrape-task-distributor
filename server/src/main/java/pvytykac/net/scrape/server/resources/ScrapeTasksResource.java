@@ -20,11 +20,11 @@ import static javax.ws.rs.core.Response.status;
 @Path("/v1/scrape-tasks")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class ScrapeTaskResource {
+public class ScrapeTasksResource {
 
 	private final TaskDistributionFacade taskDistributionFacade;
 
-	public ScrapeTaskResource(TaskDistributionFacade taskDistributionFacade) {
+	public ScrapeTasksResource(TaskDistributionFacade taskDistributionFacade) {
 		this.taskDistributionFacade = taskDistributionFacade;
 	}
 

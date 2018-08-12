@@ -1,7 +1,6 @@
 package pvytykac.net.scrape.server.resources;
 
-import com.google.common.collect.ImmutableMap;
-import pvytykac.net.scrape.server.service.ScrapeTypeService;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -9,16 +8,18 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Set;
+
+import pvytykac.net.scrape.model.v1.SupportedScrapeTypesRepresentation;
+import pvytykac.net.scrape.server.service.ScrapeTypeService;
 
 @Path("/v1/scrape-types")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class ScrapeTypeResource {
+public class ScrapeTypesResource {
 
     private final ScrapeTypeService service;
 
-    public ScrapeTypeResource(ScrapeTypeService service) {
+    public ScrapeTypesResource(ScrapeTypeService service) {
         this.service = service;
     }
 
@@ -28,7 +29,9 @@ public class ScrapeTypeResource {
 
         Response.ResponseBuilder builder = types.isEmpty()
             ? Response.noContent()
-            : Response.ok(ImmutableMap.of("supportedTypes", types));
+            : Response.ok(new SupportedScrapeTypesRepresentation.SupportedScrapeTypesRepresentationBuilder()
+                .withSupportedScrapeTypes(types)
+                .build());
 
         return builder.build();
     }

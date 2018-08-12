@@ -2,10 +2,12 @@ package pvytykac.net.scrape.model;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Paly
@@ -20,6 +22,12 @@ public final class ModelBuilderUtil {
         return optional
                 .map(ModelBuilder::build)
                 .orElse(null);
+    }
+
+    public static <T> Set<T> asImmutableSet(Set<T> original) {
+        return original == null
+                ? null
+                : ImmutableSet.copyOf(original);
     }
 
     public static <K, V> Map<K, V> asImmutableMap(Map<K, V> original) {

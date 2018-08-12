@@ -12,6 +12,10 @@
     <artifactId>client</artifactId>
     <version>1.0.0</version>
 
+    <properties>
+        <feignVersion>9.7.0</feignVersion>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>pvytykac.net</groupId>
@@ -23,6 +27,22 @@
             <groupId>pvytykac.net</groupId>
             <artifactId>model</artifactId>
             <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-okhttp</artifactId>
+            <version>${feignVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-jackson</artifactId>
+            <version>${feignVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-slf4j</artifactId>
+            <version>${feignVersion}</version>
         </dependency>
     </dependencies>
 
