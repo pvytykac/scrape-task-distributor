@@ -1,4 +1,4 @@
-package pvytykac.net.scrape.server.facade;
+package pvytykac.net.scrape.server.service;
 
 import pvytykac.net.scrape.model.v1.ScrapeError;
 import pvytykac.net.scrape.model.v1.ScrapeResult;
@@ -12,7 +12,7 @@ import java.util.Map;
  * @author Paly
  * @since 2018-08-07
  */
-public interface TaskResultProcessor {
+public interface ScrapeResultService {
 
     void awaitResults(String sessionUuid, List<ScrapeTask> tasks);
 

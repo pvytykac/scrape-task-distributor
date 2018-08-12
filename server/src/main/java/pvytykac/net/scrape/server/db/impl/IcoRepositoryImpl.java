@@ -2,15 +2,12 @@ package pvytykac.net.scrape.server.db.impl;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import io.dropwizard.hibernate.AbstractDAO;
-import io.dropwizard.hibernate.UnitOfWork;
 import pvytykac.net.scrape.server.db.IcoRepository;
 import pvytykac.net.scrape.server.db.model.Ico;
 
@@ -18,7 +15,6 @@ import pvytykac.net.scrape.server.db.model.Ico;
  * @author Paly
  * @since 2018-08-07
  */
-@Transactional
 public class IcoRepositoryImpl extends AbstractDAO<Ico> implements IcoRepository {
 
     public IcoRepositoryImpl(SessionFactory sessionFactory) {

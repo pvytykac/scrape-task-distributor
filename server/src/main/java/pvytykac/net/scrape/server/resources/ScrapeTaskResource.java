@@ -5,7 +5,7 @@ import pvytykac.net.scrape.model.v1.PostScrapeStatusRepresentation;
 import pvytykac.net.scrape.model.v1.ScrapeResultRepresentation;
 import pvytykac.net.scrape.model.v1.ScrapeTaskRepresentation;
 import pvytykac.net.scrape.model.v1.enums.TaskType;
-import pvytykac.net.scrape.server.facade.TaskFacade;
+import pvytykac.net.scrape.server.service.TaskDistributionFacade;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -18,22 +18,22 @@ import java.util.Set;
 
 import static javax.ws.rs.core.Response.status;
 
-@Path("/v1/tasks")
+@Path("/v1/scrape-tasks")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class TaskResource {
+public class ScrapeTaskResource {
 
-	private final TaskFacade taskFacade;
+	private final TaskDistributionFacade taskDistributionFacade;
 
-	public TaskResource(TaskFacade taskFacade) {
-		this.taskFacade = taskFacade;
+	public ScrapeTaskResource(TaskDistributionFacade taskDistributionFacade) {
+		this.taskDistributionFacade = taskDistributionFacade;
 	}
 
 	@GET
 	public Response getTasks(
 			@QueryParam("ignoredType") Set<TaskType> ignoredTypes,
-			@Range(min = 1L, max = 10L) @QueryParam("limit") Integer limit) {
-		Optional<ScrapeTaskRepresentation> optional = taskFacade.getScrapeTasks(ignoredTypes, limit);
+			@Range(min = 1L, max = 10L) @QueryParam("limit") @DefaultValue("1") Integer limit) {
+		Optional<ScrapeTaskRepresentation> optional = taskDistributionFacade.getScrapeTasks(ignoredTypes, limit);
 
 		return optional.map(task -> status(Status.OK).entity(task))
                 .orElse(status(Status.NO_CONTENT))
@@ -45,7 +45,7 @@ public class TaskResource {
 	public Response postResult(
 			@PathParam("taskUuid") String taskUuid,
 			@Valid @NotNull ScrapeResultRepresentation result) {
-        Optional<PostScrapeStatusRepresentation> optional = taskFacade.processScrapeResult(result);
+        Optional<PostScrapeStatusRepresentation> optional = taskDistributionFacade.processScrapeResult(result);
 
         return optional
                 .map(status -> {

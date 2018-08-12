@@ -10,15 +10,18 @@ import pvytykac.net.scrape.server.db.IcoRepository;
 import pvytykac.net.scrape.server.db.SessionManager;
 import pvytykac.net.scrape.server.db.impl.IcoRepositoryImpl;
 import pvytykac.net.scrape.server.db.model.Ico;
-import pvytykac.net.scrape.server.facade.TaskQueue;
-import pvytykac.net.scrape.server.facade.TaskResultProcessor;
-import pvytykac.net.scrape.server.facade.TaskFacade;
-import pvytykac.net.scrape.server.facade.IcoQueue;
-import pvytykac.net.scrape.server.facade.impl.TaskQueueImpl;
-import pvytykac.net.scrape.server.facade.impl.TaskResultProcessorImpl;
-import pvytykac.net.scrape.server.facade.impl.TaskFacadeImpl;
-import pvytykac.net.scrape.server.facade.impl.IcoQueueImpl;
-import pvytykac.net.scrape.server.resources.TaskResource;
+import pvytykac.net.scrape.server.resources.ScrapeTypeResource;
+import pvytykac.net.scrape.server.service.ScrapeTaskService;
+import pvytykac.net.scrape.server.service.ScrapeResultService;
+import pvytykac.net.scrape.server.service.ScrapeTypeService;
+import pvytykac.net.scrape.server.service.TaskDistributionFacade;
+import pvytykac.net.scrape.server.service.IcoService;
+import pvytykac.net.scrape.server.service.impl.ScrapeTypeServiceImpl;
+import pvytykac.net.scrape.server.service.impl.TaskQueueImpl;
+import pvytykac.net.scrape.server.service.impl.ScrapeResultServiceImpl;
+import pvytykac.net.scrape.server.service.impl.TaskDistributionFacadeImpl;
+import pvytykac.net.scrape.server.service.impl.IcoServiceImpl;
+import pvytykac.net.scrape.server.resources.ScrapeTaskResource;
 
 /**
  * @author Paly
@@ -46,23 +49,31 @@ public class ScrapeTaskDistributorApplication extends Application<ScrapeTaskDist
     public void run(ScrapeTaskDistributorConfiguration configuration, Environment environment) throws Exception {
         SessionFactory sessionFactory = hibernate.getSessionFactory();
         SessionManager sessionManager = new SessionManager(sessionFactory);
+
+        // repositories
         IcoRepository icoRepository = new IcoRepositoryImpl(sessionFactory);
 
-        IcoQueue icoQueue = new IcoQueueImpl(icoRepository, sessionManager);
-        TaskQueue taskQueue = new TaskQueueImpl(icoQueue, configuration.getScrapeTaskConfiguration());
+        // services
+        IcoService icoService = new IcoServiceImpl(icoRepository, sessionManager);
+        ScrapeTaskService scrapeTaskService = new TaskQueueImpl();
+        ScrapeResultService scrapeResultService = new ScrapeResultServiceImpl();
+        ScrapeTypeService scrapeTypeService = new ScrapeTypeServiceImpl(configuration.getScrapeTaskConfiguration());
 
-        TaskResultProcessor taskResultProcessor = new TaskResultProcessorImpl();
-        TaskFacade taskFacade = new TaskFacadeImpl(taskQueue, taskResultProcessor);
+        // facades
+        TaskDistributionFacade taskDistributionFacade = new TaskDistributionFacadeImpl(icoService, scrapeTypeService,
+                scrapeTaskService, scrapeResultService);
 
-        TaskResource taskResource = new TaskResource(taskFacade);
+        // resources
+        environment.jersey().register(new ScrapeTaskResource(taskDistributionFacade));
+        environment.jersey().register(new ScrapeTypeResource(scrapeTypeService));
 
+        // bean registration
         environment.getApplicationContext().addBean(sessionFactory);
         environment.getApplicationContext().addBean(icoRepository);
         environment.getApplicationContext().addBean(sessionManager);
 
-        environment.lifecycle().manage(icoQueue);
-
-        environment.jersey().register(taskResource);
+        // lifecycle managed
+        environment.lifecycle().manage(icoService);
     }
 
 }

@@ -1,4 +1,4 @@
-package pvytykac.net.scrape.server.facade;
+package pvytykac.net.scrape.server.service;
 
 import pvytykac.net.scrape.model.v1.PostScrapeStatusRepresentation;
 import pvytykac.net.scrape.model.v1.ScrapeResultRepresentation;
@@ -12,10 +12,12 @@ import java.util.Set;
  * @author Paly
  * @since 2018-08-07
  */
-public interface TaskFacade {
+public interface TaskDistributionFacade {
 
-    Optional<ScrapeTaskRepresentation> getScrapeTasks(Set<TaskType> ignoredTypes, Integer limit);
+    Optional<ScrapeTaskRepresentation> getScrapeTasks(Set<TaskType> ignoredTypes, int limit);
 
     Optional<PostScrapeStatusRepresentation> processScrapeResult(ScrapeResultRepresentation result);
+
+    Set<String> getSupportedScrapeTypes();
 
 }

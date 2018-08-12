@@ -1,58 +1,42 @@
-package pvytykac.net.scrape.server.facade.impl;
+package pvytykac.net.scrape.server.service.impl;
 
-import static java.util.stream.Collectors.toList;
-
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableList;
-
-import io.dropwizard.lifecycle.Managed;
-import pvytykac.net.scrape.model.v1.enums.TaskType;
 import pvytykac.net.scrape.server.db.IcoRepository;
 import pvytykac.net.scrape.server.db.SessionManager;
 import pvytykac.net.scrape.server.db.model.Ico;
-import pvytykac.net.scrape.server.facade.IcoQueue;
+import pvytykac.net.scrape.server.service.IcoService;
 
 /**
  * @author Paly
  * @since 2018-08-07
  */
-public class IcoQueueImpl implements IcoQueue {
+public class IcoServiceImpl implements IcoService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IcoQueueImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IcoServiceImpl.class);
     private static final int QUEUE_SIZE = 100;
 
     private final Queue<Ico> queue;
     private final IcoFetcher fetcher;
 
-    public IcoQueueImpl(IcoRepository icoRepository, SessionManager sessionManager) {
+    public IcoServiceImpl(IcoRepository icoRepository, SessionManager sessionManager) {
         this.queue = new LinkedBlockingQueue<>(QUEUE_SIZE);
         this.fetcher = new IcoFetcher(icoRepository, sessionManager, queue);
     }
 
     @Override
-    public Optional<Ico> dequeue() {
+    public Optional<Ico> getNextIco() {
         synchronized (queue) {
             return Optional.ofNullable(queue.poll());
-        }
-    }
-
-    @Override
-    public boolean returnToQueue(Ico ico) {
-        synchronized (this) {
-            return queue.contains(ico) || queue.offer(ico);
         }
     }
 

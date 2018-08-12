@@ -1,10 +1,10 @@
-package pvytykac.net.scrape.server.facade.impl;
+package pvytykac.net.scrape.server.service.impl;
 
 import pvytykac.net.scrape.model.v1.ScrapeError;
 import pvytykac.net.scrape.model.v1.ScrapeResult;
 import pvytykac.net.scrape.model.v1.ScrapeTask;
 import pvytykac.net.scrape.model.v1.enums.ScrapeType;
-import pvytykac.net.scrape.server.facade.TaskResultProcessor;
+import pvytykac.net.scrape.server.service.ScrapeResultService;
 
 import java.util.List;
 import java.util.Map;
@@ -13,7 +13,7 @@ import java.util.Map;
  * @author Paly
  * @since 2018-08-07
  */
-public class TaskResultProcessorImpl implements TaskResultProcessor {
+public class ScrapeResultServiceImpl implements ScrapeResultService {
 
     @Override
     public void awaitResults(String sessionUuid, List<ScrapeTask> tasks) {

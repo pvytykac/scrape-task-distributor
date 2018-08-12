@@ -2,6 +2,7 @@ package pvytykac.net.scrape.model.v1;
 
 import pvytykac.net.scrape.model.ModelBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableList;
