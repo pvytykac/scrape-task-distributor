@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import pvytykac.net.scrape.model.v1.ScrapeTask;
 import pvytykac.net.scrape.server.service.ScrapeTaskService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
@@ -25,7 +26,11 @@ public class TaskQueueImpl implements ScrapeTaskService {
     }
 
     @Override
-    public List<ScrapeTask> getScrapeTasks(Set<String> ignoredTypes, int limit) {
+    public List<ScrapeTask> getScrapeTasks(Set<String> applicableTypes, int limit) {
+        if (applicableTypes.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         ImmutableList.Builder<ScrapeTask> acceptableTasks = ImmutableList.builder();
         Stream.Builder<ScrapeTask> refusedTasks = Stream.builder();
         int size = 0;
@@ -33,11 +38,11 @@ public class TaskQueueImpl implements ScrapeTaskService {
         synchronized (queue) {
             ScrapeTask task;
             while(size < limit && (task = queue.poll()) != null) {
-                if (ignoredTypes.contains(task.getTaskType())) {
-                    refusedTasks.add(task);
-                } else {
+                if (applicableTypes.contains(task.getTaskType())) {
                     acceptableTasks.add(task);
                     ++size;
+                } else {
+                    refusedTasks.add(task);
                 }
             }
 

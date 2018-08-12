@@ -19,6 +19,7 @@ import pvytykac.net.scrape.server.service.ScrapeTypeService;
 import pvytykac.net.scrape.server.service.TaskDistributionFacade;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -50,8 +51,10 @@ public class TaskDistributionFacadeImpl implements TaskDistributionFacade {
 
     @Override
     public Optional<ScrapeTaskRepresentation> getScrapeTasks(Set<String> ignoredTypes, int limit) {
-        List<ScrapeTask> cachedTasks = scrapeTaskService.getScrapeTasks(ignoredTypes, limit);
-        List<ScrapeTask> newTasks = createNewTasks(limit - cachedTasks.size());
+        Set<String> applicapleScrapeTypes = getApplicableScrapeTypes(ignoredTypes);
+
+        List<ScrapeTask> cachedTasks = scrapeTaskService.getScrapeTasks(applicapleScrapeTypes, limit);
+        List<ScrapeTask> newTasks = createNewTasks(applicapleScrapeTypes, limit - cachedTasks.size());
 
         String sessionUuid = UUID.randomUUID().toString();
         List<ScrapeTask> tasks = ImmutableList.<ScrapeTask>builder()
@@ -103,11 +106,22 @@ public class TaskDistributionFacadeImpl implements TaskDistributionFacade {
     }
 
     @Override
-    public Set<String> getSupportedScrapeTypes() {
+    public Set<String> getScrapeTypesSupportedByPlatform() {
         return scrapeTypeService.getScrapeTypes();
     }
 
-    private List<ScrapeTask> createNewTasks(int limit) {
+    private Set<String> getApplicableScrapeTypes(Set<String> ignoredScrapeTypes) {
+        return getScrapeTypesSupportedByPlatform()
+                .stream()
+                .filter(type -> !ignoredScrapeTypes.contains(type))
+                .collect(Collectors.toSet());
+    }
+
+    private List<ScrapeTask> createNewTasks(Set<String> applicableTypes, int limit) {
+        if (applicableTypes.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         List<ScrapeTask> tasks = new ArrayList<>();
 
         while(tasks.size() < limit) {
@@ -116,7 +130,17 @@ public class TaskDistributionFacadeImpl implements TaskDistributionFacade {
                     .orElse(Stream.empty())
                     .collect(Collectors.toList());
 
-            tasks.addAll(batch);
+            if (!batch.isEmpty() && batch.stream().map(ScrapeTask::getTaskType).noneMatch(applicableTypes::contains)) {
+                batch.forEach(scrapeTaskService::returnScrapeTask);
+                /* TODO: This needs a bit more thought, the applicable types might contain only types that none of the
+                 * icos in the ico queue have. This would result in icos being pulled and converted into tasks until
+                 * ico with the correct form is found. This would very likely fill the task queue to the point where
+                 * tasks cannot be added anymore
+                 */
+                return Collections.emptyList();
+            } else {
+                tasks.addAll(batch);
+            }
         }
 
         removeAndProcessAllAboveLimit(tasks, limit, scrapeTaskService::returnScrapeTask);

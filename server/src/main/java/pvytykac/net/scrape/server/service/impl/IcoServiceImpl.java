@@ -52,7 +52,7 @@ public class IcoServiceImpl implements IcoService {
 
     private static final class IcoFetcher implements Runnable {
 
-        private static final int FETCH_THRESHOLD = 10;
+        private static final int FETCH_THRESHOLD = 20;
 
         private final IcoRepository icoRepository;
         private final SessionManager sessionManager;
@@ -73,7 +73,7 @@ public class IcoServiceImpl implements IcoService {
                 sessionManager.setUpHibernateSession();
                 synchronized (queue) {
                     if (queue.size() <= FETCH_THRESHOLD) {
-                        List<Ico> icoList = icoRepository.list(50, ico);
+                        List<Ico> icoList = icoRepository.list(QUEUE_SIZE - queue.size(), ico);
 
                         if (icoList.isEmpty()) {
                             ico = null;

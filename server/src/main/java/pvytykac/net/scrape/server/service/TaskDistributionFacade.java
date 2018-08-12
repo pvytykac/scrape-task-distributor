@@ -17,6 +17,6 @@ public interface TaskDistributionFacade {
 
     Optional<PostScrapeStatusRepresentation> processScrapeResult(ScrapeResultRepresentation result);
 
-    Set<String> getSupportedScrapeTypes();
+    Set<String> getScrapeTypesSupportedByPlatform();
 
 }

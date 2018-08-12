@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public interface ScrapeTaskService {
 
-    List<ScrapeTask> getScrapeTasks(Set<String> ignoredTypes, int limit);
+    List<ScrapeTask> getScrapeTasks(Set<String> applicableTypes, int limit);
 
     boolean returnScrapeTask(ScrapeTask task);
 
