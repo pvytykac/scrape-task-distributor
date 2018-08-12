@@ -1,3 +1,24 @@
+server:
+  applicationConnectors:
+  - type: http
+    port: 9080
+  adminConnectors:
+  - type: http
+    port: 9081
+
+logging:
+  level: INFO
+  loggers:
+    net.pvytykac.*: TRACE
+    org.hibernate.engine.internal.StatisticalLoggingSessionEventListener: WARN
+  appenders:
+    - type: console
+
+metrics:
+  frequency: 1 hour
+  reporters:
+    - type: csv
+
 database:
   driverClass: org.h2.Driver
   user: sa
@@ -10,3 +31,12 @@ database:
     minSize: 1
     maxSize: 5
     maxWaitForConnection: 1s
+
+scrapeTaskConfigurations:
+  - scrapeType: "RES"
+    steps:
+      - sequenceNumber: 1
+        method: "POST"
+        uri: "http://apl.czso.cz/irsw/hledat.jsp"
+        contentType: "application/x-www-form-urlencoded"
+        payload: "ico=${ico}&nazev=&forma=&okres=&texttype=0&zanik=0&run_rswquery=Hledej"

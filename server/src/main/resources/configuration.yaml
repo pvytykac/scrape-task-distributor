@@ -1,3 +1,11 @@
+server:
+  applicationConnectors:
+  - type: http
+    port: 8080
+  adminConnectors:
+  - type: http
+    port: 8081
+
 logging:
   level: INFO
   loggers:
@@ -7,9 +15,9 @@ logging:
     - type: console
 
 metrics:
-  frequency: 1 minute
+  frequency: 1 hour
   reporters:
-    - type: console
+    - type: csv
 
 database:
   driverClass: com.mysql.cj.jdbc.Driver
@@ -22,3 +30,12 @@ database:
     minSize: 1
     maxSize: 5
     maxWaitForConnection: 1s
+
+scrapeTaskConfigurations:
+  - scrapeType: "RES"
+    steps:
+      - sequenceNumber: 1
+        method: "POST"
+        uri: "http://apl.czso.cz/irsw/hledat.jsp"
+        contentType: "application/x-www-form-urlencoded"
+        payload: "ico=${ico}&nazev=&forma=&okres=&texttype=0&zanik=0&run_rswquery=Hledej"

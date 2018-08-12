@@ -1,7 +1,10 @@
 package pvytykac.net.scrape.model.v1;
 
+import org.hibernate.validator.constraints.NotBlank;
 import pvytykac.net.scrape.model.ModelBuilder;
 import pvytykac.net.scrape.model.v1.enums.ExpectationType;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Paly
@@ -9,7 +12,10 @@ import pvytykac.net.scrape.model.v1.enums.ExpectationType;
  */
 public final class ScrapeExpectation {
 
+    @NotNull
     private ExpectationType type;
+
+    @NotBlank
     private String expected;
 
     // used by jackson

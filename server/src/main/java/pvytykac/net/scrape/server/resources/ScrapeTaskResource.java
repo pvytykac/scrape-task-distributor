@@ -4,7 +4,6 @@ import org.hibernate.validator.constraints.Range;
 import pvytykac.net.scrape.model.v1.PostScrapeStatusRepresentation;
 import pvytykac.net.scrape.model.v1.ScrapeResultRepresentation;
 import pvytykac.net.scrape.model.v1.ScrapeTaskRepresentation;
-import pvytykac.net.scrape.model.v1.enums.TaskType;
 import pvytykac.net.scrape.server.service.TaskDistributionFacade;
 
 import javax.validation.Valid;
@@ -31,7 +30,7 @@ public class ScrapeTaskResource {
 
 	@GET
 	public Response getTasks(
-			@QueryParam("ignoredType") Set<TaskType> ignoredTypes,
+			@QueryParam("ignoredType") Set<String> ignoredTypes,
 			@Range(min = 1L, max = 10L) @QueryParam("limit") @DefaultValue("1") Integer limit) {
 		Optional<ScrapeTaskRepresentation> optional = taskDistributionFacade.getScrapeTasks(ignoredTypes, limit);
 

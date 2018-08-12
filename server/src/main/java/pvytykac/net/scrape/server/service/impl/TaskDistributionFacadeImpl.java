@@ -12,14 +12,13 @@ import pvytykac.net.scrape.model.v1.ScrapeTaskRepresentation;
 import pvytykac.net.scrape.model.v1.ScrapeTaskRepresentation.ScrapeTaskRepresentationBuilder;
 import pvytykac.net.scrape.model.v1.enums.ActionType;
 import pvytykac.net.scrape.model.v1.enums.ScrapeType;
-import pvytykac.net.scrape.model.v1.enums.TaskType;
 import pvytykac.net.scrape.server.service.IcoService;
 import pvytykac.net.scrape.server.service.ScrapeResultService;
 import pvytykac.net.scrape.server.service.ScrapeTaskService;
 import pvytykac.net.scrape.server.service.ScrapeTypeService;
 import pvytykac.net.scrape.server.service.TaskDistributionFacade;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -50,7 +49,7 @@ public class TaskDistributionFacadeImpl implements TaskDistributionFacade {
     }
 
     @Override
-    public Optional<ScrapeTaskRepresentation> getScrapeTasks(Set<TaskType> ignoredTypes, int limit) {
+    public Optional<ScrapeTaskRepresentation> getScrapeTasks(Set<String> ignoredTypes, int limit) {
         List<ScrapeTask> cachedTasks = scrapeTaskService.getScrapeTasks(ignoredTypes, limit);
         List<ScrapeTask> newTasks = createNewTasks(limit - cachedTasks.size());
 
@@ -109,18 +108,19 @@ public class TaskDistributionFacadeImpl implements TaskDistributionFacade {
     }
 
     private List<ScrapeTask> createNewTasks(int limit) {
-        List<ScrapeTask> tasks = Collections.emptyList();
+        List<ScrapeTask> tasks = new ArrayList<>();
 
-        if (limit > 0) {
-            tasks = icoService.getNextIco()
+        while(tasks.size() < limit) {
+            List<ScrapeTask> batch = icoService.getNextIco()
                     .map(scrapeTypeService::createScrapeTasks)
                     .orElse(Stream.empty())
                     .collect(Collectors.toList());
 
-            removeAndProcessAllAboveLimit(tasks, limit, scrapeTaskService::returnScrapeTask);
+            tasks.addAll(batch);
         }
 
-        return tasks;
+        removeAndProcessAllAboveLimit(tasks, limit, scrapeTaskService::returnScrapeTask);
+        return ImmutableList.copyOf(tasks);
     }
 
     private ScrapeTaskRepresentation toRepresentation(String sessionUuid, List<ScrapeTask> tasks) {

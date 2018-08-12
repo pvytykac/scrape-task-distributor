@@ -4,12 +4,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import pvytykac.net.scrape.model.JsonTest;
+import pvytykac.net.scrape.model.v1.enums.HttpMethod;
 
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static pvytykac.net.scrape.model.MatcherUtil.isEnum;
 
 /**
  * @author Paly
@@ -22,7 +24,7 @@ public class ScrapeStepTest extends JsonTest {
         ScrapeStep step = new ScrapeStep.ScrapeStepBuilder()
                 .withSequenceNumber(1)
                 .withUri("uri")
-                .withMethod("POST")
+                .withMethod(HttpMethod.POST)
                 .withContentType("application/json")
                 .withQueryParameters(singletonMap("a", "b"))
                 .withHeaders(singletonMap("b", "c"))
@@ -35,7 +37,7 @@ public class ScrapeStepTest extends JsonTest {
 
         assertThat(json.getInt("sequenceNumber"), is(step.getSequenceNumber()));
         assertThat(json.getString("uri"), is(step.getUri()));
-        assertThat(json.getString("method"), is(step.getMethod()));
+        assertThat(json.getString("method"), isEnum(step.getMethod()));
         assertThat(json.getString("contentType"), is(step.getContentType()));
         assertThat(json.getJSONObject("queryParameters").toMap(), is(step.getQueryParameters()));
         assertThat(json.getJSONObject("headers").toMap(), is(step.getHeaders()));
@@ -61,7 +63,7 @@ public class ScrapeStepTest extends JsonTest {
 
         assertThat(step.getSequenceNumber(), is(json.getInt("sequenceNumber")));
         assertThat(step.getUri(), is(json.getString("uri")));
-        assertThat(step.getMethod(), is(json.getString("method")));
+        assertThat(step.getMethod(), isEnum(json.getString("method"), HttpMethod.class));
         assertThat(step.getContentType(), is(json.getString("contentType")));
         assertThat(step.getPayload(), is(json.getString("payload")));
         assertThat(step.getQueryParameters(), is(json.getJSONObject("queryParameters").toMap()));

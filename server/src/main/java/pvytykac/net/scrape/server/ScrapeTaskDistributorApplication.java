@@ -1,5 +1,6 @@
 package pvytykac.net.scrape.server;
 
+import com.codahale.metrics.MetricRegistry;
 import io.dropwizard.Application;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.hibernate.HibernateBundle;
@@ -57,7 +58,7 @@ public class ScrapeTaskDistributorApplication extends Application<ScrapeTaskDist
         IcoService icoService = new IcoServiceImpl(icoRepository, sessionManager);
         ScrapeTaskService scrapeTaskService = new TaskQueueImpl();
         ScrapeResultService scrapeResultService = new ScrapeResultServiceImpl();
-        ScrapeTypeService scrapeTypeService = new ScrapeTypeServiceImpl(configuration.getScrapeTaskConfiguration());
+        ScrapeTypeService scrapeTypeService = new ScrapeTypeServiceImpl(configuration.getScrapeTaskConfigurations());
 
         // facades
         TaskDistributionFacade taskDistributionFacade = new TaskDistributionFacadeImpl(icoService, scrapeTypeService,

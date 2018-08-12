@@ -4,7 +4,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import pvytykac.net.scrape.model.JsonTest;
-import pvytykac.net.scrape.model.v1.enums.TaskType;
 
 import java.util.Collections;
 
@@ -23,7 +22,7 @@ public class ScrapeTaskTest extends JsonTest {
     public void serialize() throws Exception {
         ScrapeTask task = new ScrapeTask.ScrapeTaskBuilder()
                 .withTaskUuid("task1")
-                .withTaskType(TaskType.TMP)
+                .withTaskType("TASK_TYPE")
                 .withParameters(Collections.singletonMap("a", "b"))
                 .withSteps(Collections.singletonList(mockModelInstance(ScrapeStep.class)))
                 .build();
@@ -31,7 +30,7 @@ public class ScrapeTaskTest extends JsonTest {
         JSONObject json = serialize(task);
 
         assertThat(json.getString("taskUuid"), is(task.getTaskUuid()));
-        assertThat(json.getString("taskType"), isEnum(task.getTaskType()));
+        assertThat(json.getString("taskType"), is("TASK_TYPE"));
         assertThat(json.getJSONObject("parameters").toMap(), is(task.getParameters()));
         assertThat(json.getJSONArray("steps").length(), is(1));
     }
@@ -47,7 +46,7 @@ public class ScrapeTaskTest extends JsonTest {
         ScrapeTask task = deserialize(json, ScrapeTask.class);
 
         assertThat(task.getTaskUuid(), is(json.getString("taskUuid")));
-        assertThat(task.getTaskType(), isEnum(json.getString("taskType"), TaskType.class));
+        assertThat(task.getTaskType(), is(json.getString("taskType")));
         assertThat(task.getParameters(), notNullValue());
         assertThat(task.getSteps(), notNullValue());
     }

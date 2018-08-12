@@ -5,6 +5,7 @@ import javax.validation.constraints.NotNull;
 
 import io.dropwizard.Configuration;
 import io.dropwizard.db.DataSourceFactory;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import java.util.List;
 
@@ -18,13 +19,16 @@ public class ScrapeTaskDistributorConfiguration extends Configuration {
 	@NotNull
 	private DataSourceFactory database;
 
-	private List<ScrapeTaskConfiguration> scrapeTaskConfiguration;
+	@Valid
+	@NotEmpty
+	@NotNull
+	private List<ScrapeTaskConfiguration> scrapeTaskConfigurations;
 
 	public DataSourceFactory getDatabase() {
 		return database;
 	}
 
-	public List<ScrapeTaskConfiguration> getScrapeTaskConfiguration() {
-		return scrapeTaskConfiguration;
+	public List<ScrapeTaskConfiguration> getScrapeTaskConfigurations() {
+		return scrapeTaskConfigurations;
 	}
 }

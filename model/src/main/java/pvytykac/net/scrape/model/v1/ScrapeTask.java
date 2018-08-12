@@ -1,7 +1,6 @@
 package pvytykac.net.scrape.model.v1;
 
 import pvytykac.net.scrape.model.ModelBuilder;
-import pvytykac.net.scrape.model.v1.enums.TaskType;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,7 @@ import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableMap;
 public final class ScrapeTask {
 
     private String taskUuid;
-    private TaskType taskType;
+    private String taskType;
     private Map<String, String> parameters;
     private List<ScrapeStep> steps;
 
@@ -35,7 +34,7 @@ public final class ScrapeTask {
         return taskUuid;
     }
 
-    public TaskType getTaskType() {
+    public String getTaskType() {
         return taskType;
     }
 
@@ -50,7 +49,7 @@ public final class ScrapeTask {
     public static final class ScrapeTaskBuilder implements ModelBuilder<ScrapeTask> {
         
         private String taskUuid;
-        private TaskType taskType;
+        private String taskType;
         private Map<String, String> parameters;
         private List<ScrapeStep> steps;
 
@@ -58,7 +57,7 @@ public final class ScrapeTask {
             return taskUuid;
         }
 
-        public TaskType getTaskType() {
+        public String getTaskType() {
             return taskType;
         }
 
@@ -70,7 +69,7 @@ public final class ScrapeTask {
             return steps;
         }
 
-        public ScrapeTaskBuilder withTaskType(TaskType taskType) {
+        public ScrapeTaskBuilder withTaskType(String taskType) {
             this.taskType = taskType;
             return this;
         }

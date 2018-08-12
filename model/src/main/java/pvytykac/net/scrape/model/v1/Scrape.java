@@ -1,7 +1,10 @@
 package pvytykac.net.scrape.model.v1;
 
+import org.hibernate.validator.constraints.NotBlank;
 import pvytykac.net.scrape.model.ModelBuilder;
 import pvytykac.net.scrape.model.v1.enums.ScrapeType;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Paly
@@ -9,8 +12,13 @@ import pvytykac.net.scrape.model.v1.enums.ScrapeType;
  */
 public final class Scrape {
 
+    @NotNull
     private ScrapeType type;
+
+    @NotBlank
     private String target;
+
+    @NotBlank
     private String storeAs;
 
     // used by jackson

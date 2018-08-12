@@ -1,7 +1,11 @@
 package pvytykac.net.scrape.model.v1;
 
+import org.hibernate.validator.constraints.NotEmpty;
+import org.hibernate.validator.constraints.Range;
 import pvytykac.net.scrape.model.ModelBuilder;
+import pvytykac.net.scrape.model.v1.enums.HttpMethod;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 
@@ -14,9 +18,16 @@ import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableMap;
  */
 public final class ScrapeStep {
 
+    @NotNull
+    @Range(min = 1)
     private Integer sequenceNumber;
+
+    @NotNull
     private String uri;
-    private String method;
+
+    @NotNull
+    private HttpMethod method;
+
     private String contentType;
     private Map<String, String> queryParameters;
     private Map<String, String> headers;
@@ -48,7 +59,7 @@ public final class ScrapeStep {
         return uri;
     }
 
-    public String getMethod() {
+    public HttpMethod getMethod() {
         return method;
     }
 
@@ -80,7 +91,7 @@ public final class ScrapeStep {
 
         private Integer sequenceNumber;
         private String uri;
-        private String method;
+        private HttpMethod method;
         private String contentType;
         private Map<String, String> queryParameters;
         private Map<String, String> headers;
@@ -96,7 +107,7 @@ public final class ScrapeStep {
             return uri;
         }
 
-        private String getMethod() {
+        private HttpMethod getMethod() {
             return method;
         }
 
@@ -134,7 +145,7 @@ public final class ScrapeStep {
             return this;
         }
 
-        public ScrapeStepBuilder withMethod(String method) {
+        public ScrapeStepBuilder withMethod(HttpMethod method) {
             this.method = method;
             return this;
         }

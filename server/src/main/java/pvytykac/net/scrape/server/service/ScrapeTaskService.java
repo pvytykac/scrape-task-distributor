@@ -1,7 +1,6 @@
 package pvytykac.net.scrape.server.service;
 
 import pvytykac.net.scrape.model.v1.ScrapeTask;
-import pvytykac.net.scrape.model.v1.enums.TaskType;
 
 import java.util.List;
 import java.util.Set;
@@ -12,7 +11,7 @@ import java.util.Set;
  */
 public interface ScrapeTaskService {
 
-    List<ScrapeTask> getScrapeTasks(Set<TaskType> ignoredTypes, int limit);
+    List<ScrapeTask> getScrapeTasks(Set<String> ignoredTypes, int limit);
 
     boolean returnScrapeTask(ScrapeTask task);
 

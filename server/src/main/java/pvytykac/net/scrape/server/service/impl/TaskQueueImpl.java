@@ -2,7 +2,6 @@ package pvytykac.net.scrape.server.service.impl;
 
 import com.google.common.collect.ImmutableList;
 import pvytykac.net.scrape.model.v1.ScrapeTask;
-import pvytykac.net.scrape.model.v1.enums.TaskType;
 import pvytykac.net.scrape.server.service.ScrapeTaskService;
 
 import java.util.List;
@@ -26,7 +25,7 @@ public class TaskQueueImpl implements ScrapeTaskService {
     }
 
     @Override
-    public List<ScrapeTask> getScrapeTasks(Set<TaskType> ignoredTypes, int limit) {
+    public List<ScrapeTask> getScrapeTasks(Set<String> ignoredTypes, int limit) {
         ImmutableList.Builder<ScrapeTask> acceptableTasks = ImmutableList.builder();
         Stream.Builder<ScrapeTask> refusedTasks = Stream.builder();
         int size = 0;
