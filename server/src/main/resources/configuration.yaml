@@ -1,3 +1,16 @@
+logging:
+  level: INFO
+  loggers:
+    net.pvytykac.*: TRACE
+    org.hibernate.engine.internal.StatisticalLoggingSessionEventListener: WARN
+  appenders:
+    - type: console
+
+metrics:
+  frequency: 1 minute
+  reporters:
+    - type: console
+
 database:
   driverClass: com.mysql.cj.jdbc.Driver
   user: std-user
