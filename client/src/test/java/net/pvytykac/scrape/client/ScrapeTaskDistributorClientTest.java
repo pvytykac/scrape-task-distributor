@@ -14,7 +14,7 @@ import feign.Feign;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import feign.slf4j.Slf4jLogger;
-import pvytykac.net.scrape.model.v1.ScrapeTaskRepresentation;
+import pvytykac.net.scrape.model.v1.ScrapeSessionRepresentation;
 import pvytykac.net.scrape.model.v1.SupportedScrapeTypesRepresentation;
 
 public class ScrapeTaskDistributorClientTest {
@@ -42,7 +42,7 @@ public class ScrapeTaskDistributorClientTest {
 
 	@Test
 	public void getScrapeTasks() throws Exception {
-		ScrapeTaskRepresentation response = client.getScrapeTasks(2, null);
+		ScrapeSessionRepresentation response = client.getScrapeSession(2, null);
 
 		assertThat(response, notNullValue());
 		assertThat(response.getSessionUuid(), notNullValue());
@@ -52,7 +52,7 @@ public class ScrapeTaskDistributorClientTest {
 
 	@Test
 	public void getScrapeTasksWithIgnoredTypes() throws Exception {
-		ScrapeTaskRepresentation response = client.getScrapeTasks(1, ImmutableSet.of("RES", "NON_EXISTENT"));
+		ScrapeSessionRepresentation response = client.getScrapeSession(1, ImmutableSet.of("RES", "NON_EXISTENT"));
 
 		assertThat(response, nullValue());
 	}

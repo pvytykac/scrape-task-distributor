@@ -1,11 +1,11 @@
 package pvytykac.net.scrape.model.v1;
 
-import pvytykac.net.scrape.model.ModelBuilder;
+import static java.util.Optional.ofNullable;
+import static pvytykac.net.scrape.model.ModelBuilderUtil.buildOptional;
 
 import java.util.Optional;
 
-import static java.util.Optional.ofNullable;
-import static pvytykac.net.scrape.model.ModelBuilderUtil.buildOptional;
+import pvytykac.net.scrape.model.ModelBuilder;
 
 /**
  * @author Paly
@@ -44,9 +44,11 @@ public final class ScrapeError {
         private Optional<ModelBuilder<ScrapeStep>> scrapeStepBuilder = Optional.empty();
         private Optional<ModelBuilder<ClientException>> clientExceptionBuilder = Optional.empty();
         private Optional<ModelBuilder<FailedExpectation>> failedExpectationBuilder = Optional.empty();
+        private ScrapeStep step;
 
         private ScrapeStep getScrapeStep() {
-            return buildOptional(scrapeStepBuilder);
+            return scrapeStepBuilder.map(ModelBuilder::build)
+                    .orElse(step);
         }
 
         private ClientException getClientException() {
@@ -59,6 +61,11 @@ public final class ScrapeError {
 
         public ScrapeErrorBuilder withScrapeStep(ModelBuilder<ScrapeStep> scrapeStepBuilder) {
             this.scrapeStepBuilder = ofNullable(scrapeStepBuilder);
+            return this;
+        }
+
+        public ScrapeErrorBuilder withScrapeStep(ScrapeStep step) {
+            this.step = step;
             return this;
         }
 

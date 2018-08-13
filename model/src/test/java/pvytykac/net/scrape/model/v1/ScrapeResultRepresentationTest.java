@@ -24,6 +24,7 @@ public class ScrapeResultRepresentationTest extends JsonTest {
                 .withResult(resultBuilder)
                 .withSessionId("sessionUuid")
                 .withTaskId("taskUuid")
+                .withTaskType("TASK_TYPE")
                 .build();
 
         JSONObject json = serialize(dto);
@@ -32,6 +33,7 @@ public class ScrapeResultRepresentationTest extends JsonTest {
         assertThat(json.getJSONObject("result"), notNullValue());
         assertThat(json.getString("sessionUuid"), is(dto.getSessionUuid()));
         assertThat(json.getString("taskUuid"), is(dto.getTaskUuid()));
+        assertThat(json.getString("taskType"), is(dto.getTaskType()));
     }
 
     @Test
@@ -40,7 +42,8 @@ public class ScrapeResultRepresentationTest extends JsonTest {
                 .put("error", new JSONObject())
                 .put("result", new JSONObject())
                 .put("sessionUuid", "123")
-                .put("taskUuid", "345");
+                .put("taskUuid", "345")
+                .put("taskType", "TYPE");
 
         ScrapeResultRepresentation dto = deserialize(json, ScrapeResultRepresentation.class);
 
@@ -48,5 +51,6 @@ public class ScrapeResultRepresentationTest extends JsonTest {
         assertThat(dto.getResult(), notNullValue());
         assertThat(dto.getSessionUuid(), is(json.getString("sessionUuid")));
         assertThat(dto.getTaskUuid(), is(json.getString("taskUuid")));
+        assertThat(dto.getTaskType(), is(json.getString("taskType")));
     }
 }

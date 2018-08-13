@@ -1,10 +1,14 @@
 package pvytykac.net.scrape.model.v1;
 
-import pvytykac.net.scrape.model.ModelBuilder;
+import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableMap;
 
 import java.util.Map;
 
-import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableMap;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotBlank;
+
+import pvytykac.net.scrape.model.ModelBuilder;
 
 /**
  * @author Paly
@@ -12,10 +16,16 @@ import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableMap;
  */
 public final class ScrapeResult {
 
+    @NotNull
     private Integer statusCode;
+
+    @NotBlank
     private String payload;
-    private Map<String, String> headers;
+
+    @NotBlank
     private String contentType;
+
+    private Map<String, String> headers;
 
     // used by jackson
     private ScrapeResult() {

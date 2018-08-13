@@ -1,11 +1,14 @@
 package pvytykac.net.scrape.model.v1;
 
-import pvytykac.net.scrape.model.ModelBuilder;
+import static java.util.Optional.ofNullable;
+import static pvytykac.net.scrape.model.ModelBuilderUtil.buildOptional;
 
 import java.util.Optional;
 
-import static java.util.Optional.ofNullable;
-import static pvytykac.net.scrape.model.ModelBuilderUtil.buildOptional;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import pvytykac.net.scrape.model.ModelBuilder;
 
 /**
  * @author Paly
@@ -13,18 +16,28 @@ import static pvytykac.net.scrape.model.ModelBuilderUtil.buildOptional;
  */
 public final class ScrapeResultRepresentation {
 
+    @NotNull
     private String sessionUuid;
+
+    @NotNull
     private String taskUuid;
+
+    @NotNull
+    private String taskType;
+
+    @Valid
     private ScrapeResult result;
+
+    @Valid
     private ScrapeError error;
 
     // used by jackson
-    public ScrapeResultRepresentation() {
-    }
+    public ScrapeResultRepresentation() {}
 
     public ScrapeResultRepresentation(ScrapeResultRepresentationBuilder builder) {
         this.sessionUuid = builder.getSessionUuid();
         this.taskUuid = builder.getTaskUuid();
+        this.taskType = builder.getTaskType();
         this.result = builder.getResult();
         this.error = builder.getError();
     }
@@ -35,6 +48,10 @@ public final class ScrapeResultRepresentation {
 
     public String getTaskUuid() {
         return taskUuid;
+    }
+
+    public String getTaskType() {
+        return taskType;
     }
 
     public ScrapeResult getResult() {
@@ -49,6 +66,7 @@ public final class ScrapeResultRepresentation {
 
         private String sessionUuid;
         private String taskUuid;
+        private String taskType;
         private Optional<ModelBuilder<ScrapeResult>> resultBuilder = Optional.empty();
         private Optional<ModelBuilder<ScrapeError>> errorBuilder = Optional.empty();
 
@@ -58,6 +76,10 @@ public final class ScrapeResultRepresentation {
 
         private String getTaskUuid() {
             return taskUuid;
+        }
+
+        private String getTaskType() {
+            return taskType;
         }
 
         private ScrapeResult getResult() {
@@ -76,6 +98,11 @@ public final class ScrapeResultRepresentation {
         public ScrapeResultRepresentationBuilder withTaskId(String taskId) {
             this.taskUuid = taskId;
 			return this;
+        }
+
+        public ScrapeResultRepresentationBuilder withTaskType(String taskType) {
+            this.taskType = taskType;
+            return this;
         }
 
         public ScrapeResultRepresentationBuilder withResult(ModelBuilder<ScrapeResult> resultBuilder) {

@@ -5,11 +5,14 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -17,6 +20,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableList;
 import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableMap;
+import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableSet;
 import static pvytykac.net.scrape.model.ModelBuilderUtil.buildOptional;
 
 
@@ -78,6 +82,25 @@ public class ModelBuilderUtilTest {
     public void asImmutableListNonNull() throws Exception {
         List<String> original = new ArrayList<>(Collections.singletonList("a"));
         List<String> immutable = asImmutableList(original);
+
+        assertThat(immutable, is(original));
+
+        original.add("b");
+        assertThat(immutable, not(original));
+
+        exception.expect(UnsupportedOperationException.class);
+        immutable.add("b");
+    }
+
+    @Test
+    public void asImmutableSetNull() throws Exception {
+        assertThat(asImmutableSet(null), nullValue());
+    }
+
+    @Test
+    public void asImmutableSetNonNull() throws Exception {
+        Set<String> original = new HashSet<>(Collections.singletonList("a"));
+        Set<String> immutable = asImmutableSet(original);
 
         assertThat(immutable, is(original));
 

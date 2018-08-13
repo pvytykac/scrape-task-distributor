@@ -39,3 +39,13 @@ scrapeTaskConfigurations:
         uri: "http://apl.czso.cz/irsw/hledat.jsp"
         contentType: "application/x-www-form-urlencoded"
         payload: "ico=${ico}&nazev=&forma=&okres=&texttype=0&zanik=0&run_rswquery=Hledej"
+        expectations:
+          - type: STATUS_CODE
+            expected: "200"
+        scrape:
+          - type: "XPATH"
+            storeAs: "detailHref"
+            target: "//a[starts-with(@href, 'detail.jsp?prajed_id')]/@href"
+      - sequenceNumber: 2
+        method: "GET"
+        uri: "http://apl.czso.cz/irsw/${detailHref}"

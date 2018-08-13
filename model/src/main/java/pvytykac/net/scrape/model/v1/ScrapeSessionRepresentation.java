@@ -2,7 +2,6 @@ package pvytykac.net.scrape.model.v1;
 
 import pvytykac.net.scrape.model.ModelBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableList;
@@ -11,16 +10,16 @@ import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableList;
  * @author Paly
  * @since 2018-08-06
  */
-public final class ScrapeTaskRepresentation {
+public final class ScrapeSessionRepresentation {
 
     private String sessionUuid;
     private List<ScrapeTask> tasks;
 
     // used by jackson
-    private ScrapeTaskRepresentation() {
+    private ScrapeSessionRepresentation() {
     }
 
-    private ScrapeTaskRepresentation(ScrapeTaskRepresentationBuilder builder) {
+    private ScrapeSessionRepresentation(ScrapeTaskRepresentationBuilder builder) {
         this.sessionUuid = builder.getSessionUuid();
         this.tasks = builder.getTasks();
     }
@@ -33,7 +32,7 @@ public final class ScrapeTaskRepresentation {
         return tasks;
     }
     
-    public static final class ScrapeTaskRepresentationBuilder implements ModelBuilder<ScrapeTaskRepresentation> {
+    public static final class ScrapeTaskRepresentationBuilder implements ModelBuilder<ScrapeSessionRepresentation> {
         
         private String sessionUuid;
         private List<ScrapeTask> tasks;
@@ -57,8 +56,8 @@ public final class ScrapeTaskRepresentation {
         }
 
         @Override
-        public ScrapeTaskRepresentation build() {
-            return new ScrapeTaskRepresentation(this);
+        public ScrapeSessionRepresentation build() {
+            return new ScrapeSessionRepresentation(this);
         }
     }
 }

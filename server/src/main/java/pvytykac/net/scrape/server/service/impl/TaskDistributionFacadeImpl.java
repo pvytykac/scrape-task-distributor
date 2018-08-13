@@ -8,8 +8,8 @@ import pvytykac.net.scrape.model.v1.PostScrapeStatusRepresentation;
 import pvytykac.net.scrape.model.v1.PostScrapeStatusRepresentation.PostScrapeStatusRepresentationBuilder;
 import pvytykac.net.scrape.model.v1.ScrapeResultRepresentation;
 import pvytykac.net.scrape.model.v1.ScrapeTask;
-import pvytykac.net.scrape.model.v1.ScrapeTaskRepresentation;
-import pvytykac.net.scrape.model.v1.ScrapeTaskRepresentation.ScrapeTaskRepresentationBuilder;
+import pvytykac.net.scrape.model.v1.ScrapeSessionRepresentation;
+import pvytykac.net.scrape.model.v1.ScrapeSessionRepresentation.ScrapeTaskRepresentationBuilder;
 import pvytykac.net.scrape.model.v1.enums.ActionType;
 import pvytykac.net.scrape.model.v1.enums.ScrapeType;
 import pvytykac.net.scrape.server.service.IcoService;
@@ -50,7 +50,7 @@ public class TaskDistributionFacadeImpl implements TaskDistributionFacade {
     }
 
     @Override
-    public Optional<ScrapeTaskRepresentation> getScrapeTasks(Set<String> ignoredTypes, int limit) {
+    public Optional<ScrapeSessionRepresentation> getScrapeTasks(Set<String> ignoredTypes, int limit) {
         Set<String> applicapleScrapeTypes = getApplicableScrapeTypes(ignoredTypes);
 
         List<ScrapeTask> cachedTasks = scrapeTaskService.getScrapeTasks(applicapleScrapeTypes, limit);
@@ -62,7 +62,7 @@ public class TaskDistributionFacadeImpl implements TaskDistributionFacade {
                 .addAll(newTasks)
                 .build();
 
-        Optional<ScrapeTaskRepresentation> representation = (cachedTasks.isEmpty() && newTasks.isEmpty())
+        Optional<ScrapeSessionRepresentation> representation = (cachedTasks.isEmpty() && newTasks.isEmpty())
                 ? Optional.empty()
                 : Optional.of(toRepresentation(sessionUuid, tasks));
 
@@ -147,7 +147,7 @@ public class TaskDistributionFacadeImpl implements TaskDistributionFacade {
         return ImmutableList.copyOf(tasks);
     }
 
-    private ScrapeTaskRepresentation toRepresentation(String sessionUuid, List<ScrapeTask> tasks) {
+    private ScrapeSessionRepresentation toRepresentation(String sessionUuid, List<ScrapeTask> tasks) {
         return new ScrapeTaskRepresentationBuilder()
                 .withSessionUuid(sessionUuid)
                 .withTasks(tasks)

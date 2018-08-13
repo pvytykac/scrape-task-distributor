@@ -15,11 +15,11 @@ import static org.junit.Assert.assertThat;
  * @author Paly
  * @since 2018-08-06
  */
-public class ScrapeTaskRepresentationTest extends JsonTest {
+public class ScrapeSessionRepresentationTest extends JsonTest {
 
     @Test
     public void serialize() throws Exception {
-        ScrapeTaskRepresentation task = new ScrapeTaskRepresentation.ScrapeTaskRepresentationBuilder()
+        ScrapeSessionRepresentation task = new ScrapeSessionRepresentation.ScrapeTaskRepresentationBuilder()
                 .withSessionUuid("uuid")
                 .withTasks(Collections.singletonList(mockModelInstance(ScrapeTask.class)))
                 .build();
@@ -36,7 +36,7 @@ public class ScrapeTaskRepresentationTest extends JsonTest {
                 .put("sessionUuid", "123")
                 .put("tasks", new JSONArray());
 
-        ScrapeTaskRepresentation task = deserialize(json, ScrapeTaskRepresentation.class);
+        ScrapeSessionRepresentation task = deserialize(json, ScrapeSessionRepresentation.class);
 
         assertThat(task.getSessionUuid(), is(json.getString("sessionUuid")));
         assertThat(task.getTasks(), notNullValue());

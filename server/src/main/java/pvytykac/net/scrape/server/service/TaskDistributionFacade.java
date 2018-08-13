@@ -2,7 +2,7 @@ package pvytykac.net.scrape.server.service;
 
 import pvytykac.net.scrape.model.v1.PostScrapeStatusRepresentation;
 import pvytykac.net.scrape.model.v1.ScrapeResultRepresentation;
-import pvytykac.net.scrape.model.v1.ScrapeTaskRepresentation;
+import pvytykac.net.scrape.model.v1.ScrapeSessionRepresentation;
 
 import java.util.Optional;
 import java.util.Set;
@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public interface TaskDistributionFacade {
 
-    Optional<ScrapeTaskRepresentation> getScrapeTasks(Set<String> ignoredTypes, int limit);
+    Optional<ScrapeSessionRepresentation> getScrapeTasks(Set<String> ignoredTypes, int limit);
 
     Optional<PostScrapeStatusRepresentation> processScrapeResult(ScrapeResultRepresentation result);
 
