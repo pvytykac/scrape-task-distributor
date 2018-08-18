@@ -41,11 +41,35 @@ scrapeTaskConfigurations:
         payload: "ico=${ico}&nazev=&forma=&okres=&texttype=0&zanik=0&run_rswquery=Hledej"
         expectations:
           - type: STATUS_CODE
-            expected: "200"
-        scrape:
-          - type: "XPATH"
-            storeAs: "detailHref"
+            expectedValue: "200"
+            operator: EQUALS
+            expected: true
+          - type: HEADER
+            target: "Location"
+            expectedValue: "text/html"
+            operator: CONTAINS
+            expected: true
+          - type: BODY_CSS
             target: "//a[starts-with(@href, 'detail.jsp?prajed_id')]/@href"
+            operator: NOT_BLANK
+            expected: true
+        scrape:
+          - type: CSS
+            target: "//a[starts-with(@href, 'detail.jsp?prajed_id')]/@href"
+            storeAs: "detailHref"
       - sequenceNumber: 2
         method: "GET"
         uri: "http://apl.czso.cz/irsw/${detailHref}"
+        expectations:
+          - type: STATUS_CODE
+            expectedValue: 200
+            expected: true
+          - type: HEADER
+            target: "Content-Type"
+            expectedValue: "text/html"
+            operator: CONTAINS
+            expected: true
+          - type: BODY_CSS
+            target: "//table[@summary='identifikace']/tr[1]/td[3]"
+            operator: NOT_BLANK
+            expectedTrue: true

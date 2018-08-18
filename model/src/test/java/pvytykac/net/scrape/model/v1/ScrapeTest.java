@@ -20,7 +20,7 @@ public class ScrapeTest extends JsonTest {
         Scrape scrape = new Scrape.ScrapeBuilder()
                 .withStoreAs("%param_name%")
                 .withTarget("//div[id='banner']@text")
-                .withType(ScrapeType.XPATH)
+                .withType(ScrapeType.CSS)
                 .build();
 
         JSONObject json = serialize(scrape);

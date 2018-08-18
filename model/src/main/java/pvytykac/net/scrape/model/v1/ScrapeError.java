@@ -1,8 +1,10 @@
 package pvytykac.net.scrape.model.v1;
 
 import static java.util.Optional.ofNullable;
+import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableList;
 import static pvytykac.net.scrape.model.ModelBuilderUtil.buildOptional;
 
+import java.util.List;
 import java.util.Optional;
 
 import pvytykac.net.scrape.model.ModelBuilder;
@@ -15,7 +17,7 @@ public final class ScrapeError {
 
     private ScrapeStep step;
     private ClientException clientException;
-    private FailedExpectation failedExpectation;
+    private List<FailedExpectation> failedExpectations;
 
     // used by jackson
     private ScrapeError() {
@@ -24,7 +26,7 @@ public final class ScrapeError {
     private ScrapeError(ScrapeErrorBuilder builder) {
         this.step = builder.getScrapeStep();
         this.clientException = builder.getClientException();
-        this.failedExpectation = builder.getFailedExpectationBuilder();
+        this.failedExpectations = builder.getFailedExpectations();
     }
 
     public ScrapeStep getStep() {
@@ -35,15 +37,15 @@ public final class ScrapeError {
         return clientException;
     }
 
-    public FailedExpectation getFailedExpectation() {
-        return failedExpectation;
+    public List<FailedExpectation> getFailedExpectations() {
+        return failedExpectations;
     }
 
     public static final class ScrapeErrorBuilder implements ModelBuilder<ScrapeError> {
 
         private Optional<ModelBuilder<ScrapeStep>> scrapeStepBuilder = Optional.empty();
         private Optional<ModelBuilder<ClientException>> clientExceptionBuilder = Optional.empty();
-        private Optional<ModelBuilder<FailedExpectation>> failedExpectationBuilder = Optional.empty();
+        private List<FailedExpectation> failedExpectations;
         private ScrapeStep step;
 
         private ScrapeStep getScrapeStep() {
@@ -55,8 +57,8 @@ public final class ScrapeError {
             return buildOptional(clientExceptionBuilder);
         }
 
-        private FailedExpectation getFailedExpectationBuilder() {
-            return buildOptional(failedExpectationBuilder);
+        private List<FailedExpectation> getFailedExpectations() {
+            return asImmutableList(failedExpectations);
         }
 
         public ScrapeErrorBuilder withScrapeStep(ModelBuilder<ScrapeStep> scrapeStepBuilder) {
@@ -69,13 +71,13 @@ public final class ScrapeError {
             return this;
         }
 
-        public ScrapeErrorBuilder withClientException(ModelBuilder<ClientException> clientExceptionBuilder) {
-            this.clientExceptionBuilder = ofNullable(clientExceptionBuilder);
+        public ScrapeErrorBuilder withFailedExpectations(List<FailedExpectation> failedExpectations) {
+            this.failedExpectations = failedExpectations;
             return this;
         }
 
-        public ScrapeErrorBuilder withFailedExpectation(ModelBuilder<FailedExpectation> failedExpectationBuilder) {
-            this.failedExpectationBuilder = ofNullable(failedExpectationBuilder);
+        public ScrapeErrorBuilder withClientException(ModelBuilder<ClientException> clientExceptionBuilder) {
+            this.clientExceptionBuilder = ofNullable(clientExceptionBuilder);
             return this;
         }
 
@@ -84,6 +86,6 @@ public final class ScrapeError {
             return new ScrapeError(this);
         }
 
-    }
+	}
 
 }
