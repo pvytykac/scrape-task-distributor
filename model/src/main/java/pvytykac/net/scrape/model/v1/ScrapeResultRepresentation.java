@@ -31,6 +31,12 @@ public final class ScrapeResultRepresentation {
     @Valid
     private ScrapeError error;
 
+    @NotNull
+    private Integer part;
+
+    @NotNull
+    private Integer totalParts;
+
     // used by jackson
     public ScrapeResultRepresentation() {}
 
@@ -40,6 +46,8 @@ public final class ScrapeResultRepresentation {
         this.taskType = builder.getTaskType();
         this.result = builder.getResult();
         this.error = builder.getError();
+        this.part = builder.getPart();
+        this.totalParts = builder.getTotalParts();
     }
 
     public String getSessionUuid() {
@@ -62,6 +70,14 @@ public final class ScrapeResultRepresentation {
         return error;
     }
 
+    public Integer getPart() {
+        return part;
+    }
+
+    public Integer getTotalParts() {
+        return totalParts;
+    }
+
     public static final class ScrapeResultRepresentationBuilder implements ModelBuilder<ScrapeResultRepresentation> {
 
         private String sessionUuid;
@@ -69,6 +85,8 @@ public final class ScrapeResultRepresentation {
         private String taskType;
         private Optional<ModelBuilder<ScrapeResult>> resultBuilder = Optional.empty();
         private Optional<ModelBuilder<ScrapeError>> errorBuilder = Optional.empty();
+        private Integer part;
+        private Integer totalParts;
 
         private String getSessionUuid() {
             return sessionUuid;
@@ -88,6 +106,14 @@ public final class ScrapeResultRepresentation {
 
         private ScrapeError getError() {
             return buildOptional(errorBuilder);
+        }
+
+        private Integer getPart() {
+            return part;
+        }
+
+        private Integer getTotalParts() {
+            return totalParts;
         }
 
         public ScrapeResultRepresentationBuilder withSessionId(String sessionId) {
@@ -113,6 +139,16 @@ public final class ScrapeResultRepresentation {
         public ScrapeResultRepresentationBuilder withError(ModelBuilder<ScrapeError> errorBuilder) {
             this.errorBuilder = ofNullable(errorBuilder);
 			return this;
+        }
+
+        public ScrapeResultRepresentationBuilder withPart(Integer part) {
+            this.part = part;
+            return this;
+        }
+
+        public ScrapeResultRepresentationBuilder withTotalParts(Integer totalParts) {
+            this.totalParts = totalParts;
+            return this;
         }
 
         @Override
