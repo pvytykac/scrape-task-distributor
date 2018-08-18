@@ -13,7 +13,7 @@ import java.util.TimeZone;
  * @author Paly
  * @since 2018-08-11
  */
-public class DbTest extends AppTest {
+public abstract class DbTest extends AppTest {
 
     private SessionFactory sessionFactory = requireBean(SessionFactory.class);
     protected Session session;
