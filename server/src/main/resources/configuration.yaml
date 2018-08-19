@@ -45,17 +45,17 @@ scrapeTaskConfigurations:
             operator: EQUALS
             expected: true
           - type: HEADER
-            target: "Location"
+            target: "Content-Type"
             expectedValue: "text/html"
             operator: CONTAINS
             expected: true
           - type: BODY_CSS
-            target: "//a[starts-with(@href, 'detail.jsp?prajed_id')]/@href"
+            target: "a[href^='detail.jsp?prajed_id=']"
             operator: NOT_BLANK
             expected: true
         scrape:
-          - type: CSS
-            target: "//a[starts-with(@href, 'detail.jsp?prajed_id')]/@href"
+          - type: HREF
+            target: "a[href^='detail.jsp?prajed_id=']"
             storeAs: "detailHref"
       - sequenceNumber: 2
         method: "GET"
@@ -70,6 +70,6 @@ scrapeTaskConfigurations:
             operator: CONTAINS
             expected: true
           - type: BODY_CSS
-            target: "//table[@summary='identifikace']/tr[1]/td[3]"
+            target: "table[summary='identifikace'] tr:nth-child(1) td:nth-child(3)"
             operator: NOT_BLANK
-            expectedTrue: true
+            expected: true

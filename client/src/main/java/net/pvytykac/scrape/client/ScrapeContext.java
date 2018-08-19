@@ -26,12 +26,8 @@ public class ScrapeContext {
 				.collect(Collectors.toSet());
 	}
 
-	public void saveTimeouts(Map<String, Long> timeouts) {
-
-		Optional.ofNullable(timeouts)
-				.orElse(Collections.emptyMap())
-				.entrySet()
-				.forEach(timeout -> scrapeTypeTimeouts.put(timeout.getKey(), nowUtcMs() + timeout.getValue()));
+	public void addTimeout(String taskType, Long timeout) {
+		scrapeTypeTimeouts.put(taskType, timeout);
 	}
 
 	private Long nowUtcMs() {

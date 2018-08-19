@@ -1,13 +1,9 @@
 package pvytykac.net.scrape.model.v1;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import pvytykac.net.scrape.model.JsonTest;
 
-import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -20,21 +16,21 @@ public class PostScrapeStatusRepresentationTest extends JsonTest {
     @Test
     public void serialize() throws Exception {
         PostScrapeStatusRepresentation status = new PostScrapeStatusRepresentation.PostScrapeStatusRepresentationBuilder()
-                .withActions(Collections.singletonList(mockModelInstance(PostScrapeAction.class)))
+                .withTimeoutAction(mockModelInstance(TimeoutAction.class))
                 .build();
 
         JSONObject json = serialize(status);
 
-        assertThat(json.getJSONArray("actions").length(), is(1));
+        assertThat(json.getJSONObject("timeoutAction"), notNullValue());
     }
 
     @Test
     public void deserialize() throws Exception {
         JSONObject json = new JSONObject()
-                .put("actions", new JSONArray());
+                .put("timeoutAction", new JSONObject());
 
         PostScrapeStatusRepresentation status = deserialize(json, PostScrapeStatusRepresentation.class);
 
-        assertThat(status.getActions(), notNullValue());
+        assertThat(status.getTimeoutAction(), notNullValue());
     }
 }

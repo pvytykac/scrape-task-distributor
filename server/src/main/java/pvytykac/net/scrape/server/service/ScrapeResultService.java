@@ -7,6 +7,7 @@ import pvytykac.net.scrape.model.v1.enums.ScrapeType;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Paly
@@ -16,12 +17,8 @@ public interface ScrapeResultService {
 
     void awaitResults(String sessionUuid, List<ScrapeTask> tasks);
 
-    boolean awaitsResult(String sessionUuid, String taskUuid);
+    Optional<ScrapeTask> getTask(String sessionUuid, String taskUuid);
 
-    ScrapeTask getTask(String sessionUuid, String taskUuid);
-
-    Map<ScrapeType, Long> processError(String sessionUuid, String taskUuid, ScrapeError error);
-
-    Map<ScrapeType, Long> processResult(String sessionUuid, String taskUuid, ScrapeResult result);
+    Optional<Long> processResult(String sessionUuid, ScrapeTask task, ScrapeResult result, ScrapeError error);
 
 }

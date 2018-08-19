@@ -7,14 +7,20 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import okio.Buffer;
+import okio.BufferedSink;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ResponseWrapper {
+
+	private static final Logger LOG = LoggerFactory.getLogger(ResponseWrapper.class);
 
 	private final Response response;
 	private String body;
@@ -23,6 +29,14 @@ public class ResponseWrapper {
 	private Map<String, String> headers;
 
 	public ResponseWrapper(Response response) {
+		BufferedSink sink = new Buffer();
+		try {
+			response.request().body().writeTo(sink);
+		} catch (Exception ignored) {
+			// ignored
+	    }
+
+		LOG.info("request: {}\nbody: {}", response.request().url().uri(), sink.buffer().readUtf8());
 		this.response = response;
 	}
 
@@ -40,6 +54,10 @@ public class ResponseWrapper {
 
 	public String header(String name) {
 		return response.header(name);
+	}
+
+	public Long time() {
+		return response.sentRequestAtMillis();
 	}
 
 	public Map<String, String> headers() {
@@ -62,7 +80,6 @@ public class ResponseWrapper {
 		if (!this.bodyConsumed) {
 			try {
 				this.body = response.body().string();
-				System.out.println(body);
 			} catch (IOException ex) {
 				throw new UncheckedIOException(ex);
 			} finally {

@@ -48,7 +48,7 @@ public class ScrapeTasksResource {
 
         return optional
                 .map(status -> {
-                    if (status.getActions().isEmpty()) {
+                    if (status.getTimeoutAction() == null) {
                         return status(Status.NO_CONTENT);
                     } else {
                         return status(Status.OK).entity(status);

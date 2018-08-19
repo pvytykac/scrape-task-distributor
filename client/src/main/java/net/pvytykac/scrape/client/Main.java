@@ -12,7 +12,7 @@ public class Main {
 				.logger(new Slf4jLogger())
 				.encoder(new JacksonEncoder())
 				.decoder(new JacksonDecoder())
-				.target(ScrapeTaskDistributorClientV1.class, "http://localhost:9080");
+				.target(ScrapeTaskDistributorClientV1.class, "http://localhost:8080");
 
 		Thread t = new Thread(new Scraper(client));
 		t.start();

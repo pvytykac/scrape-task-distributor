@@ -37,6 +37,9 @@ public final class ScrapeResultRepresentation {
     @NotNull
     private Integer totalParts;
 
+    @NotNull
+    private Long requestTimeUtcMs;
+
     // used by jackson
     public ScrapeResultRepresentation() {}
 
@@ -48,6 +51,7 @@ public final class ScrapeResultRepresentation {
         this.error = builder.getError();
         this.part = builder.getPart();
         this.totalParts = builder.getTotalParts();
+        this.requestTimeUtcMs = builder.getRequestTimeUtcMs();
     }
 
     public String getSessionUuid() {
@@ -78,6 +82,10 @@ public final class ScrapeResultRepresentation {
         return totalParts;
     }
 
+    public Long getRequestTimeUtcMs() {
+        return requestTimeUtcMs;
+    }
+
     public static final class ScrapeResultRepresentationBuilder implements ModelBuilder<ScrapeResultRepresentation> {
 
         private String sessionUuid;
@@ -87,6 +95,7 @@ public final class ScrapeResultRepresentation {
         private Optional<ModelBuilder<ScrapeError>> errorBuilder = Optional.empty();
         private Integer part;
         private Integer totalParts;
+        private Long requestTimeUtcMs;
 
         private String getSessionUuid() {
             return sessionUuid;
@@ -114,6 +123,10 @@ public final class ScrapeResultRepresentation {
 
         private Integer getTotalParts() {
             return totalParts;
+        }
+
+        private Long getRequestTimeUtcMs() {
+            return requestTimeUtcMs;
         }
 
         public ScrapeResultRepresentationBuilder withSessionId(String sessionId) {
@@ -151,11 +164,15 @@ public final class ScrapeResultRepresentation {
             return this;
         }
 
+        public ScrapeResultRepresentationBuilder withRequestTimeUtcMs(Long requestTimeUtcMs) {
+            this.requestTimeUtcMs = requestTimeUtcMs;
+            return this;
+        }
+
         @Override
         public ScrapeResultRepresentation build() {
             return new ScrapeResultRepresentation(this);
         }
-
     }
 
 }

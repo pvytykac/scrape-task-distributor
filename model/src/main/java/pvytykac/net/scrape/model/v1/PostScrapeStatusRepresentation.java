@@ -2,40 +2,36 @@ package pvytykac.net.scrape.model.v1;
 
 import pvytykac.net.scrape.model.ModelBuilder;
 
-import java.util.List;
-
-import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableList;
-
 /**
  * @author Paly
  * @since 2018-08-06
  */
 public final class PostScrapeStatusRepresentation {
 
-    private List<PostScrapeAction> actions;
+    private TimeoutAction timeoutAction;
 
     // used by jackson
     private PostScrapeStatusRepresentation() {
     }
 
     private PostScrapeStatusRepresentation(PostScrapeStatusRepresentationBuilder builder) {
-        this.actions = builder.getActions();
+        this.timeoutAction = builder.getTimeoutAction();
     }
 
-    public List<PostScrapeAction> getActions() {
-        return actions;
+    public TimeoutAction getTimeoutAction() {
+        return timeoutAction;
     }
 
     public static final class PostScrapeStatusRepresentationBuilder implements ModelBuilder<PostScrapeStatusRepresentation> {
 
-        private List<PostScrapeAction> actions;
+        private TimeoutAction timeoutAction;
 
-        private List<PostScrapeAction> getActions() {
-            return asImmutableList(actions);
+        private TimeoutAction getTimeoutAction() {
+            return timeoutAction;
         }
 
-        public PostScrapeStatusRepresentationBuilder withActions(List<PostScrapeAction> actions) {
-            this.actions = actions;
+        public PostScrapeStatusRepresentationBuilder withTimeoutAction(TimeoutAction timeoutAction) {
+            this.timeoutAction = timeoutAction;
             return this;
         }
 
