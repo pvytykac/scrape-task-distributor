@@ -1,23 +1,20 @@
 package net.pvytykac.scrape.client;
 
-import static java.util.stream.Collectors.toMap;
-
-import java.io.IOException;
-import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
-import okhttp3.Headers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
+import pvytykac.net.scrape.model.ModelBuilder;
 import pvytykac.net.scrape.model.v1.ClientException;
-import pvytykac.net.scrape.model.v1.Scrape;
+import pvytykac.net.scrape.model.v1.FailedExpectation;
 import pvytykac.net.scrape.model.v1.ScrapeError;
-import pvytykac.net.scrape.model.v1.ScrapeExpectation;
 import pvytykac.net.scrape.model.v1.ScrapeResult;
 import pvytykac.net.scrape.model.v1.ScrapeResultRepresentation;
 import pvytykac.net.scrape.model.v1.ScrapeStep;
@@ -25,47 +22,63 @@ import pvytykac.net.scrape.model.v1.ScrapeTask;
 
 public class ScrapeTaskProcessor {
 
+	private static final Logger LOG = LoggerFactory.getLogger(ScrapeTaskProcessor.class);
+
 	private final OkHttpClient http;
+	private final ExpectationHandler expectationHandler;
+	private final ScrapeHandler scrapeHandler;
 
 	public ScrapeTaskProcessor() {
 		this.http = new OkHttpClient();
+		this.expectationHandler = new ExpectationHandler();
+		this.scrapeHandler = new ScrapeHandler();
 	}
 
 	public ScrapeResultRepresentation processTask(String sessionUuid, ScrapeTask task) {
 		Map<String, String> parameters = new HashMap<>(task.getParameters());
 		int progress = 0;
-		Response response = null;
+		ResponseWrapper response = null;
 		ScrapeStep currentStep = null;
+		List<ScrapeStep> steps = new ArrayList<>(task.getSteps());
+		steps.sort(Comparator.comparingInt(ScrapeStep::getSequenceNumber));
 
 		try {
-			for (ScrapeStep step: task.getSteps()) {
+			for (ScrapeStep step: steps) {
+				LOG.info("Executing step '{}' for task '{}' of type '{}'", step.getSequenceNumber(), task.getTaskUuid(),
+						task.getTaskType());
+
 				++progress;
 				currentStep = step;
 
 				Request request = new ScrapeRequestBuilder(step, parameters).build();
-				response = http.newCall(request).execute();
+				response = new ResponseWrapper(http.newCall(request).execute());
 
 				if (progress < task.getSteps().size()) {
-					processStepResult(response, parameters, step.getExpectations(), step.getScrape());
-				}
+					List<FailedExpectation> failedExpectations = expectationHandler.processExpectations(response,
+							step.getExpectations());
 
+					parameters.putAll(scrapeHandler.processScrapes(response, step.getScrape()));
+
+					if (!failedExpectations.isEmpty()) {
+						LOG.error("Failed expectations: '{}'", failedExpectations.size());
+						return failedExpectationResult(sessionUuid, task, step, failedExpectations);
+					}
+				}
 			}
 
+			LOG.info("Successfully processed task '{}' of type '{}'", task.getTaskUuid(), task.getTaskType());
 			return successResult(sessionUuid, task, response);
 		} catch (Exception ex) {
+			LOG.error("Client error while processing task '{}' of type '{}'", task.getTaskUuid(), task.getTaskType());
 			return clientErrorResult(sessionUuid, task, currentStep, response, ex);
 		}
 	}
 
-	private static void processStepResult(Response response, Map<String, String> parameters, List<ScrapeExpectation> expectations, List<Scrape> scrapes) {
-		// todo: parse out stuff, store it in parameters, process expectations, send expectation failed error if expectations not met
-	}
-
-	private static ScrapeResultRepresentation successResult(String sessionUuid, ScrapeTask task, Response response) {
+	private static ScrapeResultRepresentation successResult(String sessionUuid, ScrapeTask task, ResponseWrapper response) {
 		ScrapeResult.ScrapeResultBuilder result = new ScrapeResult.ScrapeResultBuilder()
 				.withContentType(response.header("Content-Type"))
-				.withHeaders(parseHeaders(response.headers()))
-				.withPayload(parsePayload(response.body()))
+				.withHeaders(response.headers())
+				.withPayload(response.body())
 				.withStatusCode(response.code());
 
 		return new ScrapeResultRepresentation.ScrapeResultRepresentationBuilder()
@@ -76,13 +89,27 @@ public class ScrapeTaskProcessor {
 				.build();
 	}
 
+	private static ScrapeResultRepresentation failedExpectationResult(String sessionUuid, ScrapeTask task,
+			ScrapeStep step, List<FailedExpectation> failedExpectations) {
+		ModelBuilder<ScrapeError> error = new ScrapeError.ScrapeErrorBuilder()
+				.withFailedExpectations(failedExpectations)
+				.withScrapeStep(step);
+
+		return new ScrapeResultRepresentation.ScrapeResultRepresentationBuilder()
+				.withSessionId(sessionUuid)
+				.withTaskId(task.getTaskUuid())
+				.withTaskType(task.getTaskType())
+				.withError(error)
+				.build();
+	}
+
 	private static ScrapeResultRepresentation clientErrorResult(String sessionUuid, ScrapeTask task,
-			ScrapeStep step, Response response, Exception ex) {
+			ScrapeStep step, ResponseWrapper response, Exception ex) {
 		String payload = null;
 		Integer code = response == null ? null : response.code();
 
 		try {
-			payload = response == null ? null : response.body().string();
+			payload = response == null ? null : response.body();
 		} catch (Exception ignored) {}
 
 		ClientException.ClientExceptionBuilder clientException = new ClientException.ClientExceptionBuilder()
@@ -99,28 +126,4 @@ public class ScrapeTaskProcessor {
 						.withScrapeStep(step))
 				.build();
 	}
-
-	private static String parsePayload(ResponseBody responseBody) {
-		try {
-			return responseBody == null
-					? null
-					: responseBody.string();
-		} catch (IOException ignored) {
-			return null;
-		}
-	}
-
-	private static Map<String, String> parseHeaders(Headers headers) {
-		Function<List<String>, String> f = list -> {
-			String str = list.stream().reduce("", (acc, cur) -> acc + cur + ",");
-			return str.substring(0, str.length() - 2);
-		};
-
-		return headers.toMultimap()
-				.entrySet()
-				.stream()
-				.map(entry -> new SimpleEntry<>(entry.getKey(), f.apply(entry.getValue())))
-				.collect(toMap(SimpleEntry::getKey, SimpleEntry::getValue));
-	}
-
 }
