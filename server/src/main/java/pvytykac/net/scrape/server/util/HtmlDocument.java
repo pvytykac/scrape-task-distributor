@@ -26,8 +26,24 @@ public class HtmlDocument {
 		return new HtmlTable(getElementByAttribute("table", "summary", summary));
 	}
 
+	public HtmlForm getFormByName(String name) {
+		return new HtmlForm(getElementByAttribute("form", "name", name));
+	}
+
 	private Element getElementByAttribute(String tag, String attribute, String value) {
 		return document.selectFirst(tag + "[" + attribute + "='" + value + "']");
+	}
+
+	public static class HtmlForm extends HtmlElement {
+
+		public HtmlForm(Element element) {
+			super(element);
+		}
+
+		public HtmlElement getInputByName(String name) {
+			return new HtmlElement(super.selectFirstRaw("input[name='" + name  + "']"));
+		}
+
 	}
 
 	public static class HtmlTable extends HtmlElement {
@@ -94,6 +110,14 @@ public class HtmlDocument {
 
 		public String text() {
 			return textOptional().orElse(null);
+		}
+
+		public Optional<String> attrOptional(String attribute) {
+			return element.map(el -> el.attr(attribute));
+		}
+
+		public String attr(String attribute) {
+			return attrOptional(attribute).orElse(null);
 		}
 
 		public boolean hasText() {

@@ -1,6 +1,8 @@
 package pvytykac.net.scrape.server.resources;
 
 import org.hibernate.validator.constraints.Range;
+
+import io.dropwizard.hibernate.UnitOfWork;
 import pvytykac.net.scrape.model.v1.PostScrapeStatusRepresentation;
 import pvytykac.net.scrape.model.v1.ScrapeResultRepresentation;
 import pvytykac.net.scrape.model.v1.ScrapeSessionRepresentation;
@@ -39,6 +41,7 @@ public class ScrapeTasksResource {
                 .build();
 	}
 
+	@UnitOfWork
 	@POST
 	@Path("/{taskUuid}/result")
 	public Response postResult(

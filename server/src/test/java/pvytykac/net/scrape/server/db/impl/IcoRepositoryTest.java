@@ -14,8 +14,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import pvytykac.net.scrape.server.db.DbTest;
-import pvytykac.net.scrape.server.db.IcoRepository;
+import pvytykac.net.scrape.server.db.repository.IcoRepository;
 import pvytykac.net.scrape.server.db.model.Ico;
+import pvytykac.net.scrape.server.db.repository.RepositoryFacade;
 
 /**
  * @author Paly
@@ -30,7 +31,7 @@ public class IcoRepositoryTest extends DbTest {
 
     @Before
     public void setUp() throws Exception {
-        icoRepository = requireBean(IcoRepository.class);
+        icoRepository = requireBean(RepositoryFacade.class).getIcoRepository();
     }
 
     @Test

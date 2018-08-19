@@ -16,6 +16,7 @@ import pvytykac.net.scrape.model.v1.ScrapeResult;
 import pvytykac.net.scrape.model.v1.ScrapeStep;
 import pvytykac.net.scrape.model.v1.ScrapeTask;
 import pvytykac.net.scrape.server.ScrapeTaskConfiguration;
+import pvytykac.net.scrape.server.db.repository.RepositoryFacade;
 import pvytykac.net.scrape.server.service.ScrapeResultHandler;
 import pvytykac.net.scrape.server.service.ScrapeResultHandler.Status;
 import pvytykac.net.scrape.server.service.ScrapeResultService;
@@ -31,13 +32,18 @@ public class ScrapeResultServiceImpl implements ScrapeResultService {
     private final Map<String, Map<String, ScrapeTask>> sessionTaskMap;
     private final Map<String, ScrapeResultHandler> resultHandlers;
 
-    public ScrapeResultServiceImpl(List<ScrapeTaskConfiguration> configurations) {
+    public ScrapeResultServiceImpl(List<ScrapeTaskConfiguration> configurations, RepositoryFacade repositoryFacade) {
     	try {
 			this.sessionTaskMap = new HashMap<>();
 			this.resultHandlers = configurations.stream()
 					.map(cfg -> {
 						try {
-							return new SimpleEntry<>(cfg.getScrapeType(), (ScrapeResultHandler) Class.forName(cfg.getHandlerClass()).newInstance());
+							@SuppressWarnings("unchecked")
+							Class<ScrapeResultHandler> clazz = (Class<ScrapeResultHandler>) Class.forName(cfg.getHandlerClass());
+							ScrapeResultHandler handler = clazz.getConstructor(RepositoryFacade.class)
+									.newInstance(repositoryFacade);
+
+							return new SimpleEntry<>(cfg.getScrapeType(), handler);
 						} catch (Exception ex) {
 							throw new RuntimeException(ex);
 						}

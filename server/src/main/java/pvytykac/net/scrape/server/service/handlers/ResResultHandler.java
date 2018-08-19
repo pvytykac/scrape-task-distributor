@@ -1,7 +1,6 @@
 package pvytykac.net.scrape.server.service.handlers;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,15 +17,26 @@ import pvytykac.net.scrape.model.v1.ClientException;
 import pvytykac.net.scrape.model.v1.FailedExpectation;
 import pvytykac.net.scrape.model.v1.ScrapeResult;
 import pvytykac.net.scrape.model.v1.ScrapeStep;
+import pvytykac.net.scrape.server.db.model.res.ResForm;
+import pvytykac.net.scrape.server.db.model.res.ResInstitution;
+import pvytykac.net.scrape.server.db.model.res.ResRegion;
+import pvytykac.net.scrape.server.db.model.res.ResUnit;
+import pvytykac.net.scrape.server.db.repository.RepositoryFacade;
+import pvytykac.net.scrape.server.db.repository.ResRepository;
 import pvytykac.net.scrape.server.service.ScrapeResultHandler;
 import pvytykac.net.scrape.server.util.HtmlDocument;
-import pvytykac.net.scrape.server.util.HtmlDocument.HtmlElement;
 import pvytykac.net.scrape.server.util.HtmlDocument.HtmlTable;
 import pvytykac.net.scrape.server.util.HtmlDocument.HtmlTableRow;
 
 public class ResResultHandler implements ScrapeResultHandler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ResResultHandler.class);
+
+	private final ResRepository repository;
+
+	public ResResultHandler(RepositoryFacade repositoryFacade) {
+		this.repository = repositoryFacade.getResRepository();
+	}
 
 	@Override
 	public Status processClientError(ClientException error, ScrapeStep step) {
@@ -54,13 +64,18 @@ public class ResResultHandler implements ScrapeResultHandler {
 	public Status processSuccess(ScrapeResult result) {
 		HtmlDocument document = new HtmlDocument(result.getPayload());
 
+		Integer id = document.getFormByName("form_detail")
+				.getInputByName("vypis")
+				.attrOptional("onclick")
+				.map(ResResultHandler::findId)
+				.orElse(null);
 
 		HtmlTable idTable = document.getTableBySummary("identifikace");
 		String ico = idTable.selectRowAndColumn(1, 3).select("strong").text();
 		String name = idTable.selectRowAndColumn(2, 3).select("strong").text();
 
 		Optional<String> form = idTable.selectRowAndColumn(3, 3).textOptional();
-		Integer formId = form.map(str -> Integer.parseInt(str.substring(0, str.indexOf('-')).trim())).orElse(null);
+		String formId = form.map(str -> str.substring(0, str.indexOf('-')).trim()).orElse(null);
 		String formName = form.map(str -> str.substring(str.indexOf('-') + 1).trim()).orElse(null);
 
 		HtmlTable dateTable = document.getTableBySummary("vznik a zanik");
@@ -96,6 +111,31 @@ public class ResResultHandler implements ScrapeResultHandler {
 		LOG.info("parsed out res institution: '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}'",
 				ico, name, formId, formName, created, ceased, address, regionCode, region, unitCode, unit, attributes);
 
+		ResForm resForm = new ResForm();
+		resForm.setCode(formId);
+		resForm.setCode(formName);
+
+		ResRegion resRegion = new ResRegion();
+		resRegion.setCode(regionCode);
+		resRegion.setText(region);
+
+		ResUnit resUnit = new ResUnit();
+		resUnit.setCode(unitCode);
+		resUnit.setText(unit);
+
+		ResInstitution institution = new ResInstitution();
+		institution.setId(id);
+		institution.setIco(ico);
+		institution.setName(name);
+		institution.setAddress(address);
+		institution.setCreated(created);
+		institution.setCeased(ceased);
+		institution.setForm(resForm);
+		institution.setRegion(resRegion);
+		institution.setUnit(resUnit);
+
+		repository.save(institution);
+
 		return new Status(0L, false);
 	}
 
@@ -106,5 +146,14 @@ public class ResResultHandler implements ScrapeResultHandler {
 				return "404".equals(actual) ? 250L : 0L;
 			default: return 0L;
 		}
+	}
+
+	private static Integer findId(String str) {
+		System.out.println(str);
+		String prefix = "prajed_id=";
+		int start = str.indexOf(prefix) + prefix.length();
+		int end = str.indexOf('&', start);
+
+		return Integer.valueOf(str.substring(start, end));
 	}
 }

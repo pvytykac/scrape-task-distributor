@@ -1,21 +1,21 @@
-package pvytykac.net.scrape.server.db.impl;
+package pvytykac.net.scrape.server.db.repository.impl;
 
 import java.util.List;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import io.dropwizard.hibernate.AbstractDAO;
-import pvytykac.net.scrape.server.db.IcoRepository;
+import pvytykac.net.scrape.server.db.repository.IcoRepository;
 import pvytykac.net.scrape.server.db.model.Ico;
 
 /**
  * @author Paly
  * @since 2018-08-07
  */
-public class IcoRepositoryImpl extends AbstractDAO<Ico> implements IcoRepository {
+public class IcoRepositoryImpl extends AbstractRepository<String, Ico> implements IcoRepository {
 
     public IcoRepositoryImpl(SessionFactory sessionFactory) {
         super(sessionFactory);
@@ -30,15 +30,20 @@ public class IcoRepositoryImpl extends AbstractDAO<Ico> implements IcoRepository
 
         query = query.setMaxResults(limit);
 
-        return super.list(query);
+        return list(query);
     }
 
     @Override
     public boolean updateLastUpdated(String ico) {
-        return 1 == super.currentSession()
+        return 1 == getSession()
                 .createQuery("UPDATE Ico i SET i.lastUpdated = :lastUpdate WHERE i.ico = :ico")
                 .setParameter("ico", ico)
                 .setParameter("lastUpdate", DateTime.now(DateTimeZone.UTC))
                 .executeUpdate();
+    }
+
+    @Override
+    protected Class<Ico> getEntityClass() {
+        return Ico.class;
     }
 }

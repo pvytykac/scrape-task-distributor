@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pvytykac.net.scrape.server.db.IcoRepository;
+import pvytykac.net.scrape.server.db.repository.IcoRepository;
 import pvytykac.net.scrape.server.db.SessionManager;
 import pvytykac.net.scrape.server.db.model.Ico;
 import pvytykac.net.scrape.server.service.IcoService;
