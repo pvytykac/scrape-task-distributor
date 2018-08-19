@@ -33,23 +33,27 @@ database:
 
 scrapeTaskConfigurations:
   - scrapeType: "RES"
-    steps:
+    handlerClass: "pvytykac.net.scrape.server.service.handlers.ResResultHandler"
+    stepDefinitions:
       - sequenceNumber: 1
         method: "POST"
         uri: "http://apl.czso.cz/irsw/hledat.jsp"
         contentType: "application/x-www-form-urlencoded"
         payload: "ico=${ico}&nazev=&forma=&okres=&texttype=0&zanik=0&run_rswquery=Hledej"
         expectations:
-          - type: STATUS_CODE
+          - id: 1
+            type: STATUS_CODE
             expectedValue: "200"
             operator: EQUALS
             expected: true
-          - type: HEADER
+          - id: 2
+            type: HEADER
             target: "Content-Type"
             expectedValue: "text/html"
             operator: CONTAINS
             expected: true
-          - type: BODY_CSS
+          - id: 3
+            type: BODY_CSS
             target: "a[href^='detail.jsp?prajed_id=']"
             operator: NOT_BLANK
             expected: true
@@ -61,15 +65,19 @@ scrapeTaskConfigurations:
         method: "GET"
         uri: "http://apl.czso.cz/irsw/${detailHref}"
         expectations:
-          - type: STATUS_CODE
+          - id: 4
+            type: STATUS_CODE
             expectedValue: 200
+            operator: EQUALS
             expected: true
-          - type: HEADER
+          - id: 5
+            type: HEADER
             target: "Content-Type"
             expectedValue: "text/html"
             operator: CONTAINS
             expected: true
-          - type: BODY_CSS
+          - id: 6
+            type: BODY_CSS
             target: "table[summary='identifikace'] tr:nth-child(1) td:nth-child(3)"
             operator: NOT_BLANK
             expected: true

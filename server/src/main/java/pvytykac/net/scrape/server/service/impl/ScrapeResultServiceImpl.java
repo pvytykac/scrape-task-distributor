@@ -1,18 +1,24 @@
 package pvytykac.net.scrape.server.service.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import pvytykac.net.scrape.model.v1.ScrapeError;
-import pvytykac.net.scrape.model.v1.ScrapeResult;
-import pvytykac.net.scrape.model.v1.ScrapeTask;
-import pvytykac.net.scrape.server.service.ScrapeResultHandler;
-import pvytykac.net.scrape.server.service.ScrapeResultHandler.ErrorStatus;
-import pvytykac.net.scrape.server.service.ScrapeResultService;
-
+import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import pvytykac.net.scrape.model.v1.ScrapeError;
+import pvytykac.net.scrape.model.v1.ScrapeResult;
+import pvytykac.net.scrape.model.v1.ScrapeStep;
+import pvytykac.net.scrape.model.v1.ScrapeTask;
+import pvytykac.net.scrape.server.ScrapeTaskConfiguration;
+import pvytykac.net.scrape.server.service.ScrapeResultHandler;
+import pvytykac.net.scrape.server.service.ScrapeResultHandler.Status;
+import pvytykac.net.scrape.server.service.ScrapeResultService;
 
 /**
  * @author Paly
@@ -25,9 +31,21 @@ public class ScrapeResultServiceImpl implements ScrapeResultService {
     private final Map<String, Map<String, ScrapeTask>> sessionTaskMap;
     private final Map<String, ScrapeResultHandler> resultHandlers;
 
-    public ScrapeResultServiceImpl() {
-        this.sessionTaskMap = new HashMap<>();
-        this.resultHandlers = new HashMap<>();
+    public ScrapeResultServiceImpl(List<ScrapeTaskConfiguration> configurations) {
+    	try {
+			this.sessionTaskMap = new HashMap<>();
+			this.resultHandlers = configurations.stream()
+					.map(cfg -> {
+						try {
+							return new SimpleEntry<>(cfg.getScrapeType(), (ScrapeResultHandler) Class.forName(cfg.getHandlerClass()).newInstance());
+						} catch (Exception ex) {
+							throw new RuntimeException(ex);
+						}
+					})
+					.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+		} catch (Exception ex) {
+    		throw new RuntimeException(ex);
+		}
     }
 
     @Override
@@ -49,14 +67,20 @@ public class ScrapeResultServiceImpl implements ScrapeResultService {
 
         ScrapeResultHandler handler = resultHandlers.get(task.getTaskType());
         if (error != null) {
-            ErrorStatus status = handler.processError(error);
+            Long timeout = null;
+            ScrapeStep step = error.getStep();
 
-            // todo: put back to task queue, if retriable
+            if (error.getClientException() != null) {
+                timeout = handler.processClientError(error.getClientException(), step)
+                        .getTimeout();
+            } else if (error.getFailedExpectations() != null && !error.getFailedExpectations().isEmpty()) {
+                timeout = handler.processFailedExpectations(error.getFailedExpectations(), step)
+                        .getTimeout();
+            }
 
-            return Optional.ofNullable(status.getTimeout());
+            return Optional.ofNullable(timeout);
         } else {
-            ScrapeResultHandler.SuccessStatus status = handler.processSuccess(result);
-
+            Status status = handler.processSuccess(result);
             return Optional.empty();
         }
     }

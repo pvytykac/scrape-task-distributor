@@ -1,7 +1,11 @@
 package pvytykac.net.scrape.server.service;
 
-import pvytykac.net.scrape.model.v1.ScrapeError;
+import java.util.List;
+
+import pvytykac.net.scrape.model.v1.ClientException;
+import pvytykac.net.scrape.model.v1.FailedExpectation;
 import pvytykac.net.scrape.model.v1.ScrapeResult;
+import pvytykac.net.scrape.model.v1.ScrapeStep;
 
 /**
  * @author Paly
@@ -9,14 +13,15 @@ import pvytykac.net.scrape.model.v1.ScrapeResult;
  */
 public interface ScrapeResultHandler {
 
-    ErrorStatus processError(ScrapeError scrapeError);
-    SuccessStatus processSuccess(ScrapeResult scrapeError);
+    Status processClientError(ClientException error, ScrapeStep step);
+    Status processFailedExpectations(List<FailedExpectation> errors, ScrapeStep step);
+    Status processSuccess(ScrapeResult result);
 
-    final class ErrorStatus {
+    final class Status {
         private final Long timeout;
         private final boolean retriable;
 
-        public ErrorStatus(Long timeout, boolean retriable) {
+        public Status(Long timeout, boolean retriable) {
             this.timeout = timeout;
             this.retriable = retriable;
         }
@@ -28,9 +33,6 @@ public interface ScrapeResultHandler {
         public boolean isRetriable() {
             return retriable;
         }
-    }
-
-    final class SuccessStatus {
     }
 
 }

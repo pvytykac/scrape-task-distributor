@@ -56,7 +56,7 @@ public class ScrapeTaskDistributorApplication extends Application<ScrapeTaskDist
         // services
         IcoService icoService = new IcoServiceImpl(icoRepository, sessionManager);
         ScrapeTaskService scrapeTaskService = new TaskQueueImpl();
-        ScrapeResultService scrapeResultService = new ScrapeResultServiceImpl();
+        ScrapeResultService scrapeResultService = new ScrapeResultServiceImpl(configuration.getScrapeTaskConfigurations());
         ScrapeTypeService scrapeTypeService = new ScrapeTypeServiceImpl(configuration.getScrapeTaskConfigurations());
 
         // facades

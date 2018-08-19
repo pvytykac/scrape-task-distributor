@@ -54,7 +54,7 @@ public class ScrapeTypeServiceImpl implements ScrapeTypeService {
 		public ScrapeMapper(ScrapeTaskConfiguration configuration) {
 			this.scrapeType = configuration.getScrapeType();
 			this.supportedForms = configuration.getSupportedForms();
-			this.steps = configuration.getSteps();
+			this.steps = configuration.getStepDefinitions();
 		}
 
 		public String getScrapeType() {

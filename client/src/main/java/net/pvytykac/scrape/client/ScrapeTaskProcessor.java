@@ -1,9 +1,16 @@
 package net.pvytykac.scrape.client;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import pvytykac.net.scrape.model.ModelBuilder;
 import pvytykac.net.scrape.model.v1.ClientException.ClientExceptionBuilder;
 import pvytykac.net.scrape.model.v1.FailedExpectation;
@@ -13,12 +20,6 @@ import pvytykac.net.scrape.model.v1.ScrapeResultRepresentation;
 import pvytykac.net.scrape.model.v1.ScrapeResultRepresentation.ScrapeResultRepresentationBuilder;
 import pvytykac.net.scrape.model.v1.ScrapeStep;
 import pvytykac.net.scrape.model.v1.ScrapeTask;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class ScrapeTaskProcessor {
 
@@ -52,17 +53,16 @@ public class ScrapeTaskProcessor {
 
 				Request request = new ScrapeRequestBuilder(step, parameters).build();
 				response = new ResponseWrapper(http.newCall(request).execute());
+				List<FailedExpectation> failedExpectations = expectationHandler.processExpectations(response,
+						step.getExpectations());
+
+				if (!failedExpectations.isEmpty()) {
+					LOG.error("Failed expectations: '{}'", failedExpectations.size());
+					return failedExpectationResult(sessionUuid, task, step, failedExpectations, response.time());
+				}
 
 				if (progress < steps.size()) {
-					List<FailedExpectation> failedExpectations = expectationHandler.processExpectations(response,
-							step.getExpectations());
-
 					parameters.putAll(scrapeHandler.processScrapes(response, step.getScrape()));
-
-					if (!failedExpectations.isEmpty()) {
-						LOG.error("Failed expectations: '{}'", failedExpectations.size());
-						return failedExpectationResult(sessionUuid, task, step, failedExpectations, response.time());
-					}
 				}
 			}
 

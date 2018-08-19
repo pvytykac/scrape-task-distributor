@@ -6,6 +6,6 @@ package pvytykac.net.scrape.model.v1.enums;
  */
 public enum ExpectationType {
 
-    HEADER, BODY_CSS, BODY_JSON, STATUS_CODE;
+    HEADER, BODY_CSS, STATUS_CODE;
 
 }

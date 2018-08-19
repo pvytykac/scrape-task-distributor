@@ -1,16 +1,18 @@
 package pvytykac.net.scrape.model.v1;
 
-import org.hibernate.validator.constraints.NotEmpty;
-import org.hibernate.validator.constraints.Range;
-import pvytykac.net.scrape.model.ModelBuilder;
-import pvytykac.net.scrape.model.v1.enums.HttpMethod;
+import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableList;
+import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableMap;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 
-import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableList;
-import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableMap;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.Range;
+
+import pvytykac.net.scrape.model.ModelBuilder;
+import pvytykac.net.scrape.model.v1.enums.HttpMethod;
 
 /**
  * @author Paly
@@ -32,7 +34,11 @@ public final class ScrapeStep {
     private Map<String, String> queryParameters;
     private Map<String, String> headers;
     private String payload;
+
+    @Valid
     private List<ScrapeExpectation> expectations;
+
+    @Valid
     private List<Scrape> scrape;
 
     // used by jackson

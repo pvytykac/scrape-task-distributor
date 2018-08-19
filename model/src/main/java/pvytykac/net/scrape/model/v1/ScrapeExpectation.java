@@ -1,11 +1,12 @@
 package pvytykac.net.scrape.model.v1;
 
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.NotBlank;
+
 import pvytykac.net.scrape.model.ModelBuilder;
 import pvytykac.net.scrape.model.v1.enums.ExpectationType;
 import pvytykac.net.scrape.model.v1.enums.Operator;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * @author Paly
@@ -14,11 +15,13 @@ import javax.validation.constraints.NotNull;
 public final class ScrapeExpectation {
 
     @NotNull
+    private Integer id;
+
+    @NotNull
     private ExpectationType type;
 
     private String target;
 
-    @NotBlank
     private String expectedValue;
 
     @NotNull
@@ -32,11 +35,16 @@ public final class ScrapeExpectation {
     }
 
     private ScrapeExpectation(ScrapeExpectationBuilder builder) {
+        this.id = builder.getId();
         this.type = builder.getType();
         this.target = builder.getTarget();
         this.expectedValue = builder.getExpectedValue();
         this.operator = builder.getOperator();
         this.expected = builder.getExpected();
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     public ExpectationType getType() {
@@ -61,11 +69,16 @@ public final class ScrapeExpectation {
 
     public static final class ScrapeExpectationBuilder implements ModelBuilder<ScrapeExpectation> {
 
+        private Integer id;
         private ExpectationType type;
         private String target;
         private String expectedValue;
         private Operator operator;
         private Boolean expected;
+
+        private Integer getId() {
+            return id;
+        }
 
         private ExpectationType getType() {
             return type;
@@ -85,6 +98,11 @@ public final class ScrapeExpectation {
 
         private String getTarget() {
             return target;
+        }
+
+        public ScrapeExpectationBuilder withId(Integer id) {
+            this.id = id;
+            return this;
         }
 
         public ScrapeExpectationBuilder withType(ExpectationType type) {

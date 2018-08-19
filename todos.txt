@@ -1,1 +1,2 @@
 //todo: Look into using tagsoup over jsoup to allow XPATH over CSS selectors
+//todo: revise logging, remove useless logs, add logs to make the client/server scrape failure investigation easier

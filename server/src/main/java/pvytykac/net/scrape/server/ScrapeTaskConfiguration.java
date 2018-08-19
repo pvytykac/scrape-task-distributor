@@ -1,15 +1,21 @@
 package pvytykac.net.scrape.server;
 
-import io.dropwizard.validation.ValidationMethod;
-import net.pvytykac.scrape.util.CollectionsUtil;
-import org.hibernate.validator.constraints.NotEmpty;
-import pvytykac.net.scrape.model.v1.ScrapeStep;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
+
+import io.dropwizard.validation.ValidationMethod;
+import net.pvytykac.scrape.util.CollectionsUtil;
+import pvytykac.net.scrape.model.v1.ScrapeStep;
+import pvytykac.net.scrape.server.service.ScrapeResultHandler;
+import pvytykac.net.scrape.server.service.handlers.ResResultHandler;
 
 /**
  * @author Paly
@@ -22,10 +28,13 @@ public class ScrapeTaskConfiguration {
 
     private Set<Integer> supportedForms;
 
+    @NotBlank
+    private String handlerClass;
+
+    @Valid
     @NotNull
     @NotEmpty
-    @Valid
-    private List<ScrapeStep> steps;
+    private List<ScrapeStep> stepDefinitions;
 
     public String getScrapeType() {
         return scrapeType;
@@ -35,35 +44,53 @@ public class ScrapeTaskConfiguration {
         return supportedForms;
     }
 
-    public List<ScrapeStep> getSteps() {
-        return steps;
+	public String getHandlerClass() {
+		return handlerClass;
+	}
+
+	public List<ScrapeStep> getStepDefinitions() {
+        return stepDefinitions;
     }
 
+	@ValidationMethod(message = "class does not exist or doesn't implement ScrapeResultHandler")
+    public boolean isHandlerClassValid() {
+		if (StringUtils.isNotBlank(handlerClass)) {
+			try {
+				Class<?> clazz = Class.forName(handlerClass);
+				return ScrapeResultHandler.class.isAssignableFrom(clazz);
+			} catch (ClassNotFoundException ex) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
     @ValidationMethod(message = "scrape task steps are not sequential")
-    public boolean isStepsSequential() {
+    public boolean areStepDefinitionsSequential() {
         List<Integer> stepSequenceList = getStepSequenceList();
 
-        return steps == null
-                || steps.isEmpty()
+        return stepDefinitions == null
+                || stepDefinitions.isEmpty()
                 || CollectionsUtil.containsDuplicates(stepSequenceList)
                 || CollectionsUtil.containsNulls(stepSequenceList)
                 || CollectionsUtil.isSequential(stepSequenceList);
     }
 
     @ValidationMethod(message = "a scrape task steps have duplicate sequence numbers")
-    public boolean isStepsSequenceUnique() {
+    public boolean areStepDefinitionSequenceNumbersUnique() {
         List<Integer> stepsSequenceList = getStepSequenceList();
 
-        return steps == null
-                || steps.isEmpty()
+        return stepDefinitions == null
+                || stepDefinitions.isEmpty()
                 || CollectionsUtil.containsNulls(stepsSequenceList)
                 || !CollectionsUtil.containsDuplicates(stepsSequenceList);
     }
 
     private List<Integer> getStepSequenceList() {
-        return steps == null
+        return stepDefinitions == null
                 ? null
-                : steps.stream()
+                : stepDefinitions.stream()
                     .map(ScrapeStep::getSequenceNumber)
                     .collect(Collectors.toList());
     }
