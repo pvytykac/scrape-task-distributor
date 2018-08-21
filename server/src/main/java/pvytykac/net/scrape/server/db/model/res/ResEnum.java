@@ -1,22 +1,27 @@
 package pvytykac.net.scrape.server.db.model.res;
 
+import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import pvytykac.net.scrape.server.db.repository.Dbo;
+
 @MappedSuperclass
-public class ResEnum {
+public class ResEnum implements Dbo<String> {
 
 	@Id
-	private String code;
+	@Column(name = "code")
+	private String id;
 
 	private String text;
 
-	public String getCode() {
-		return code;
+	@Override
+	public String getId() {
+		return id;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getText() {
@@ -25,5 +30,22 @@ public class ResEnum {
 
 	public void setText(String text) {
 		this.text = text;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+
+		ResEnum resEnum = (ResEnum) o;
+
+		return id.equals(resEnum.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return id.hashCode();
 	}
 }

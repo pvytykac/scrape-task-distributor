@@ -79,7 +79,7 @@ public class IcoServiceImpl implements IcoService {
                             ico = null;
                         } else {
                             queue.addAll(icoList);
-                            ico = icoList.get(icoList.size() - 1).getIco();
+                            ico = icoList.get(icoList.size() - 1).getId();
                         }
                     }
                 }

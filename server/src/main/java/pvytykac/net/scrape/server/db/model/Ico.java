@@ -7,16 +7,19 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import pvytykac.net.scrape.server.db.repository.Dbo;
+
 /**
  * @author Paly
  * @since 2018-08-11
  */
 @Entity
 @Table(name = "icos")
-public class Ico {
+public class Ico implements Dbo<String> {
 
     @Id
-    private String ico;
+    @Column(name = "ico")
+    private String id;
 
     @Column
     private Integer form;
@@ -24,8 +27,9 @@ public class Ico {
     @Column
     private DateTime lastUpdated;
 
-    public String getIco() {
-        return ico;
+    @Override
+    public String getId() {
+        return id;
     }
 
     public Integer getForm() {

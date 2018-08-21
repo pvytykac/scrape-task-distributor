@@ -24,8 +24,8 @@ import pvytykac.net.scrape.server.db.repository.RepositoryFacade;
  */
 public class IcoRepositoryTest extends DbTest {
 
-    private static final String ICO_A = "00000078";
-    private static final String ICO_B = "00000175";
+    private static final String ID_A = "00000078";
+    private static final String ID_B = "00000175";
 
     private IcoRepository icoRepository;
 
@@ -36,14 +36,14 @@ public class IcoRepositoryTest extends DbTest {
 
     @Test
     public void updateLastUpdated() throws Exception {
-        assertThat(icoRepository.updateLastUpdated(ICO_A), is(true));
+        assertThat(icoRepository.updateLastUpdated(ID_A), is(true));
 
-        Ico ico = session.createQuery("FROM Ico i WHERE i.ico = :ico", Ico.class)
-                .setParameter("ico", ICO_A)
+        Ico ico = session.createQuery("FROM Ico i WHERE i.id = :id", Ico.class)
+                .setParameter("id", ID_A)
                 .uniqueResult();
 
         assertThat(ico, notNullValue());
-        assertThat(ico.getIco(), is(ICO_A));
+        assertThat(ico.getId(), is(ID_A));
         assertThat(ico.getForm(), is(301));
         assertThat(ico.getLastUpdated(), notNullValue());
 
@@ -59,19 +59,19 @@ public class IcoRepositoryTest extends DbTest {
         assertThat(list, notNullValue());
         assertThat(list.size(), is(1));
 
-        assertThat(list.get(0).getIco(), is(ICO_A));
+        assertThat(list.get(0).getId(), is(ID_A));
         assertThat(list.get(0).getForm(), is(301));
         assertThat(list.get(0).getLastUpdated(), is(DateTime.parse("2015-01-06T00:01:02.999")));
     }
 
     @Test
     public void listWithOffset() throws Exception {
-        List<Ico> list = icoRepository.list(1, ICO_A);
+        List<Ico> list = icoRepository.list(1, ID_A);
 
         assertThat(list, notNullValue());
         assertThat(list.size(), is(1));
 
-        assertThat(list.get(0).getIco(), is(ICO_B));
+        assertThat(list.get(0).getId(), is(ID_B));
         assertThat(list.get(0).getForm(), is(331));
         assertThat(list.get(0).getLastUpdated(), is(DateTime.parse("2016-07-09T01:02:03.111")));
     }

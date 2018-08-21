@@ -2,8 +2,8 @@ package pvytykac.net.scrape.server.db.repository.impl;
 
 import org.hibernate.SessionFactory;
 
-import pvytykac.net.scrape.server.db.repository.ResRepository;
 import pvytykac.net.scrape.server.db.model.res.ResInstitution;
+import pvytykac.net.scrape.server.db.repository.ResRepository;
 
 public class ResRepositoryImpl extends AbstractRepository<Integer, ResInstitution> implements ResRepository {
 

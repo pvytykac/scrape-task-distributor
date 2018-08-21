@@ -34,7 +34,7 @@ public class ScrapeTypeServiceImpl implements ScrapeTypeService {
 	public Optional<ScrapeTask> createScrapeTask(Ico ico, String scrapeType) {
 		return Optional.ofNullable(mappers.get(scrapeType))
 				.filter(mapper -> mapper.isApplicableTo(ico.getForm()))
-				.map(mapper -> mapper.createTask(ico.getIco()));
+				.map(mapper -> mapper.createTask(ico.getId()));
 	}
 
 	@Override

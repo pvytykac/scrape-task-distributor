@@ -112,15 +112,15 @@ public class ResResultHandler implements ScrapeResultHandler {
 				ico, name, formId, formName, created, ceased, address, regionCode, region, unitCode, unit, attributes);
 
 		ResForm resForm = new ResForm();
-		resForm.setCode(formId);
-		resForm.setCode(formName);
+		resForm.setId(formId);
+		resForm.setId(formName);
 
 		ResRegion resRegion = new ResRegion();
-		resRegion.setCode(regionCode);
+		resRegion.setId(regionCode);
 		resRegion.setText(region);
 
 		ResUnit resUnit = new ResUnit();
-		resUnit.setCode(unitCode);
+		resUnit.setId(unitCode);
 		resUnit.setText(unit);
 
 		ResInstitution institution = new ResInstitution();

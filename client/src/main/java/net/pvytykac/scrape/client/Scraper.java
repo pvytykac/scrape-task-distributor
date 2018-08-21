@@ -37,11 +37,17 @@ public class Scraper implements Runnable {
 			if (session != null) {
 				session.getTasks()
 						.forEach(task -> {
-							ScrapeResultRepresentation result = scrapeTaskProcessor.processTask(session.getSessionUuid(), task);
-							PostScrapeStatusRepresentation status = client.postScrapeResult(task.getTaskUuid(), result);
-							if (status != null) {
-								TimeoutAction action = status.getTimeoutAction();
-								context.addTimeout(action.getTaskType(), action.getTimeout());
+							try {
+								ScrapeResultRepresentation result = scrapeTaskProcessor
+										.processTask(session.getSessionUuid(), task);
+								PostScrapeStatusRepresentation status = client
+										.postScrapeResult(task.getTaskUuid(), result);
+								if (status != null) {
+									TimeoutAction action = status.getTimeoutAction();
+									context.addTimeout(action.getTaskType(), action.getTimeout());
+								}
+							} catch (Exception ex) {
+								ex.printStackTrace();
 							}
 						});
 			} else {

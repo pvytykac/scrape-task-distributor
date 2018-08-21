@@ -7,15 +7,18 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
+import pvytykac.net.scrape.server.db.repository.Dbo;
 import pvytykac.net.scrape.server.db.repository.Repository;
 
-public abstract class AbstractRepository<ID, ENTITY> implements Repository<ID, ENTITY> {
+public abstract class AbstractRepository<ID, ENTITY extends Dbo<ID>> implements Repository<ID, ENTITY> {
 
 	private final SessionFactory sessionFactory;
 
 	public AbstractRepository(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
+
+	protected abstract Class<ENTITY> getEntityClass();
 
 	@Override
 	public ENTITY find(ID id) {
@@ -31,19 +34,17 @@ public abstract class AbstractRepository<ID, ENTITY> implements Repository<ID, E
 
 	@Override
 	public void save(ENTITY entity) {
-		getSession().persist(entity);
+		getSession().saveOrUpdate(entity);
 	}
 
 	protected Query<ENTITY> query(String query) {
 		return getSession().createQuery(query, getEntityClass());
 	}
 
-	@SuppressWarnings("unchecked")
 	protected List<ENTITY> list(Query<ENTITY> query) {
 		return query.list();
 	}
 
-	protected abstract Class<ENTITY> getEntityClass();
 
 	protected Session getSession() {
 		return sessionFactory.getCurrentSession();

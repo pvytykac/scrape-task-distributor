@@ -4,14 +4,16 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.joda.time.DateTime;
 
+import pvytykac.net.scrape.server.db.repository.Dbo;
+
 @Entity
 @Table(name = "res_institution")
-public class ResInstitution {
+public class ResInstitution implements Dbo<Integer> {
 
 	@Id
 	private Integer id;
@@ -22,15 +24,15 @@ public class ResInstitution {
 	private DateTime ceased;
 	private String address;
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "form_id", referencedColumnName = "code")
 	private ResForm form;
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "region_id", referencedColumnName = "code")
 	private ResRegion region;
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "unit_id", referencedColumnName = "code")
 	private ResUnit unit;
 
@@ -104,5 +106,22 @@ public class ResInstitution {
 
 	public void setUnit(ResUnit unit) {
 		this.unit = unit;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+
+		ResInstitution that = (ResInstitution) o;
+
+		return id.equals(that.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return id.hashCode();
 	}
 }
