@@ -1,14 +1,14 @@
 package pvytykac.net.scrape.model.v1;
 
 import static java.util.Optional.ofNullable;
-import static pvytykac.net.scrape.model.ModelBuilderUtil.buildOptional;
+import static net.pvytykac.scrape.util.ModelBuilderUtil.buildOptional;
 
 import java.util.Optional;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import pvytykac.net.scrape.model.ModelBuilder;
+import net.pvytykac.scrape.util.ModelBuilder;
 
 /**
  * @author Paly

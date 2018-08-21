@@ -1,6 +1,6 @@
 package pvytykac.net.scrape.model.v1;
 
-import pvytykac.net.scrape.model.ModelBuilder;
+import net.pvytykac.scrape.util.ModelBuilder;
 
 /**
  * @author Paly

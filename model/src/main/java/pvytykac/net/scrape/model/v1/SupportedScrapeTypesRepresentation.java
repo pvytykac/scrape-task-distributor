@@ -1,10 +1,10 @@
 package pvytykac.net.scrape.model.v1;
 
-import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableSet;
+import net.pvytykac.scrape.util.ModelBuilder;
 
 import java.util.Set;
 
-import pvytykac.net.scrape.model.ModelBuilder;
+import static net.pvytykac.scrape.util.ModelBuilderUtil.asImmutableSet;
 
 public class SupportedScrapeTypesRepresentation {
 

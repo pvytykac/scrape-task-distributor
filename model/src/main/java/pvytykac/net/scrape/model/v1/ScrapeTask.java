@@ -1,12 +1,12 @@
 package pvytykac.net.scrape.model.v1;
 
-import pvytykac.net.scrape.model.ModelBuilder;
+import net.pvytykac.scrape.util.ModelBuilder;
 
 import java.util.List;
 import java.util.Map;
 
-import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableList;
-import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableMap;
+import static net.pvytykac.scrape.util.ModelBuilderUtil.asImmutableList;
+import static net.pvytykac.scrape.util.ModelBuilderUtil.asImmutableMap;
 
 /**
  * @author Paly

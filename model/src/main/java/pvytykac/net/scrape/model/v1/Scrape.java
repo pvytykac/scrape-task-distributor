@@ -1,7 +1,7 @@
 package pvytykac.net.scrape.model.v1;
 
 import org.hibernate.validator.constraints.NotBlank;
-import pvytykac.net.scrape.model.ModelBuilder;
+import net.pvytykac.scrape.util.ModelBuilder;
 import pvytykac.net.scrape.model.v1.enums.ScrapeType;
 
 import javax.validation.constraints.NotNull;

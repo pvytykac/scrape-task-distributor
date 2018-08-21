@@ -1,10 +1,10 @@
 package pvytykac.net.scrape.model.v1;
 
-import pvytykac.net.scrape.model.ModelBuilder;
+import net.pvytykac.scrape.util.ModelBuilder;
 
 import java.util.List;
 
-import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableList;
+import static net.pvytykac.scrape.util.ModelBuilderUtil.asImmutableList;
 
 /**
  * @author Paly

@@ -1,14 +1,12 @@
 package pvytykac.net.scrape.model.v1;
 
-import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableMap;
-
-import java.util.Map;
-
-import javax.validation.constraints.NotNull;
-
+import net.pvytykac.scrape.util.ModelBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 
-import pvytykac.net.scrape.model.ModelBuilder;
+import javax.validation.constraints.NotNull;
+import java.util.Map;
+
+import static net.pvytykac.scrape.util.ModelBuilderUtil.asImmutableMap;
 
 /**
  * @author Paly

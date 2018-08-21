@@ -1,18 +1,16 @@
 package pvytykac.net.scrape.model.v1;
 
-import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableList;
-import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableMap;
-
-import java.util.List;
-import java.util.Map;
+import net.pvytykac.scrape.util.ModelBuilder;
+import org.hibernate.validator.constraints.Range;
+import pvytykac.net.scrape.model.v1.enums.HttpMethod;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Map;
 
-import org.hibernate.validator.constraints.Range;
-
-import pvytykac.net.scrape.model.ModelBuilder;
-import pvytykac.net.scrape.model.v1.enums.HttpMethod;
+import static net.pvytykac.scrape.util.ModelBuilderUtil.asImmutableList;
+import static net.pvytykac.scrape.util.ModelBuilderUtil.asImmutableMap;
 
 /**
  * @author Paly

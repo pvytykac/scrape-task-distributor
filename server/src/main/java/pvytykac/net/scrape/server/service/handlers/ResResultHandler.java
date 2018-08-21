@@ -1,18 +1,9 @@
 package pvytykac.net.scrape.server.service.handlers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
+import com.google.common.collect.ImmutableMap;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ImmutableMap;
-
 import pvytykac.net.scrape.model.v1.ClientException;
 import pvytykac.net.scrape.model.v1.FailedExpectation;
 import pvytykac.net.scrape.model.v1.ScrapeResult;
@@ -27,6 +18,13 @@ import pvytykac.net.scrape.server.service.ScrapeResultHandler;
 import pvytykac.net.scrape.server.util.HtmlDocument;
 import pvytykac.net.scrape.server.util.HtmlDocument.HtmlTable;
 import pvytykac.net.scrape.server.util.HtmlDocument.HtmlTableRow;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 public class ResResultHandler implements ScrapeResultHandler {
 
@@ -111,28 +109,26 @@ public class ResResultHandler implements ScrapeResultHandler {
 		LOG.info("parsed out res institution: '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}'",
 				ico, name, formId, formName, created, ceased, address, regionCode, region, unitCode, unit, attributes);
 
-		ResForm resForm = new ResForm();
-		resForm.setId(formId);
-		resForm.setId(formName);
-
-		ResRegion resRegion = new ResRegion();
-		resRegion.setId(regionCode);
-		resRegion.setText(region);
-
-		ResUnit resUnit = new ResUnit();
-		resUnit.setId(unitCode);
-		resUnit.setText(unit);
-
-		ResInstitution institution = new ResInstitution();
-		institution.setId(id);
-		institution.setIco(ico);
-		institution.setName(name);
-		institution.setAddress(address);
-		institution.setCreated(created);
-		institution.setCeased(ceased);
-		institution.setForm(resForm);
-		institution.setRegion(resRegion);
-		institution.setUnit(resUnit);
+		ResInstitution institution = new ResInstitution.Builder()
+				.withId(id)
+				.withIco(ico)
+				.withName(name)
+				.withAddress(address)
+				.withCreated(created)
+				.withCeased(ceased)
+				.withForm(new ResForm.Builder()
+						.withId(formId)
+						.withText(formName)
+						.build())
+				.withRegion(new ResRegion.Builder()
+						.withId(regionCode)
+						.withText(region)
+						.build())
+				.withUnit(new ResUnit.Builder()
+						.withId(unitCode)
+						.withText(unit)
+						.build())
+				.build();
 
 		repository.save(institution);
 

@@ -3,7 +3,7 @@ package pvytykac.net.scrape.model.v1;
 import org.json.JSONObject;
 import org.junit.Test;
 import pvytykac.net.scrape.model.JsonTest;
-import pvytykac.net.scrape.model.ModelBuilder;
+import net.pvytykac.scrape.util.ModelBuilder;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;

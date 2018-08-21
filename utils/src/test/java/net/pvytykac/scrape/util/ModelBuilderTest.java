@@ -1,4 +1,4 @@
-package pvytykac.net.scrape.model;
+package net.pvytykac.scrape.util;
 
 import org.junit.Test;
 

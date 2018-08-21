@@ -1,10 +1,11 @@
 package pvytykac.net.scrape.server.db.model.res;
 
+import pvytykac.net.scrape.server.db.model.DboBuilder;
+import pvytykac.net.scrape.server.db.repository.Dbo;
+
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-
-import pvytykac.net.scrape.server.db.repository.Dbo;
 
 @MappedSuperclass
 public class ResEnum implements Dbo<String> {
@@ -13,39 +14,37 @@ public class ResEnum implements Dbo<String> {
 	@Column(name = "code")
 	private String id;
 
+	@Column
 	private String text;
+
+	protected ResEnum() {}
+
+	protected <B extends Builder, T extends ResEnum> ResEnum(Builder<B, T> builder) {
+		this.id = builder.getId();
+		this.text = builder.getText();
+	}
 
 	@Override
 	public String getId() {
 		return id;
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	public String getText() {
 		return text;
 	}
 
-	public void setText(String text) {
-		this.text = text;
-	}
+	public static abstract class Builder<BUILDER extends Builder, T extends ResEnum> extends DboBuilder<BUILDER, String, T> {
+		
+		private String text;
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
+		public String getText() {
+			return text;
+		}
 
-		ResEnum resEnum = (ResEnum) o;
-
-		return id.equals(resEnum.id);
-	}
-
-	@Override
-	public int hashCode() {
-		return id.hashCode();
+		@SuppressWarnings("unchecked")
+		public BUILDER withText(String text) {
+			this.text = text;
+			return (BUILDER) this;
+		}
 	}
 }

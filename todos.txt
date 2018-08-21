@@ -1,3 +1,4 @@
 //todo: Fix hibernate duplicate key errors when persisting res enums
 //todo: Look into using tagsoup over jsoup to allow XPATH over CSS selectors
 //todo: revise logging, remove useless logs, add logs to make the client/server scrape failure investigation easier
+//todo: fix package names - pvytykac.net... is used instead of net.pvytykac...

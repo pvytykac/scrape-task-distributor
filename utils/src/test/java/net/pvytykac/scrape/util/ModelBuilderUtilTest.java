@@ -1,11 +1,10 @@
-package pvytykac.net.scrape.model;
+package net.pvytykac.scrape.util;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,14 +13,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import static net.pvytykac.scrape.util.ModelBuilderUtil.asImmutableList;
+import static net.pvytykac.scrape.util.ModelBuilderUtil.asImmutableMap;
+import static net.pvytykac.scrape.util.ModelBuilderUtil.asImmutableSet;
+import static net.pvytykac.scrape.util.ModelBuilderUtil.buildOptional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableList;
-import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableMap;
-import static pvytykac.net.scrape.model.ModelBuilderUtil.asImmutableSet;
-import static pvytykac.net.scrape.model.ModelBuilderUtil.buildOptional;
 
 
 /**

@@ -9,6 +9,8 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import pvytykac.net.scrape.server.db.SessionManager;
 import pvytykac.net.scrape.server.db.model.Ico;
+import pvytykac.net.scrape.server.db.model.res.ResAttribute;
+import pvytykac.net.scrape.server.db.model.res.ResAttributeValue;
 import pvytykac.net.scrape.server.db.model.res.ResForm;
 import pvytykac.net.scrape.server.db.model.res.ResInstitution;
 import pvytykac.net.scrape.server.db.model.res.ResRegion;
@@ -34,7 +36,7 @@ import pvytykac.net.scrape.server.service.impl.TaskQueueImpl;
 public class ScrapeTaskDistributorApplication extends Application<ScrapeTaskDistributorConfiguration> {
 
     private final HibernateBundle<ScrapeTaskDistributorConfiguration> hibernate = new HibernateBundle<ScrapeTaskDistributorConfiguration>(Ico.class,
-            ResForm.class, ResRegion.class, ResUnit.class, ResInstitution.class) {
+            ResForm.class, ResRegion.class, ResUnit.class, ResInstitution.class, ResAttribute.class, ResAttributeValue.class) {
         @Override
         public DataSourceFactory getDataSourceFactory(ScrapeTaskDistributorConfiguration configuration) {
             return configuration.getDatabase();

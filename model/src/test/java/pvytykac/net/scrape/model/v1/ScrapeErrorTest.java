@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import org.junit.Test;
 
 import pvytykac.net.scrape.model.JsonTest;
-import pvytykac.net.scrape.model.ModelBuilder;
+import net.pvytykac.scrape.util.ModelBuilder;
 
 /**
  * @author Paly

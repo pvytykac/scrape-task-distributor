@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import pvytykac.net.scrape.model.ModelBuilder;
+import net.pvytykac.scrape.util.ModelBuilder;
 import pvytykac.net.scrape.model.v1.ClientException.ClientExceptionBuilder;
 import pvytykac.net.scrape.model.v1.FailedExpectation;
 import pvytykac.net.scrape.model.v1.ScrapeError;

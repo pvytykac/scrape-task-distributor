@@ -1,4 +1,4 @@
-package pvytykac.net.scrape.model;
+package net.pvytykac.scrape.util;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
