@@ -34,23 +34,27 @@ public class Scraper implements Runnable {
 		ScrapeContext context = new ScrapeContext();
 
 		while (running) {
-			ScrapeTask task = client.getScrapeSession("RES");
+			try {
+				ScrapeTask task = client.getScrapeSession("RES");
 
-			if (task != null) {
-				try {
-					ScrapeResultRepresentation result = scrapeTaskProcessor
-							.processTask(UUID.randomUUID().toString(), task);
-					PostScrapeStatusRepresentation status = client
-							.postScrapeResult(task.getTaskUuid(), result);
-					if (status != null) {
-						TimeoutAction action = status.getTimeoutAction();
-						context.addTimeout(action.getTaskType(), action.getTimeout());
+				if (task != null) {
+					try {
+						ScrapeResultRepresentation result = scrapeTaskProcessor
+								.processTask(UUID.randomUUID().toString(), task);
+						PostScrapeStatusRepresentation status = client
+								.postScrapeResult(task.getTaskUuid(), result);
+						if (status != null) {
+							TimeoutAction action = status.getTimeoutAction();
+							context.addTimeout(action.getTaskType(), action.getTimeout());
+						}
+					} catch (Exception ex) {
+						ex.printStackTrace();
 					}
-				} catch (Exception ex) {
-					ex.printStackTrace();
+				} else {
+					sleep(context);
 				}
-			} else {
-				sleep(context);
+			} catch (Exception ex) {
+				ex.printStackTrace();
 			}
 		}
 	}
