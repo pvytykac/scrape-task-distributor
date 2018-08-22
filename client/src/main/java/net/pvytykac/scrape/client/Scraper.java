@@ -33,16 +33,20 @@ public class Scraper implements Runnable {
 	public void run() {
 		ScrapeContext context = new ScrapeContext();
 
+		ScrapeTask task = null;
+		PostScrapeStatusRepresentation status = null;
 		while (running) {
 			try {
-				ScrapeTask task = client.getScrapeSession("RES");
+				sleep(context, 0L);
+				if (status == null || !status.getRetry()) {
+					task = client.getScrapeSession("RES");
+				}
 
 				if (task != null) {
 					try {
 						ScrapeResultRepresentation result = scrapeTaskProcessor
 								.processTask(UUID.randomUUID().toString(), task);
-						PostScrapeStatusRepresentation status = client
-								.postScrapeResult(task.getTaskUuid(), result);
+						status = client.postScrapeResult(task.getTaskUuid(), result);
 						if (status != null) {
 							TimeoutAction action = status.getTimeoutAction();
 							context.addTimeout(action.getTaskType(), action.getTimeout());
@@ -51,7 +55,7 @@ public class Scraper implements Runnable {
 						ex.printStackTrace();
 					}
 				} else {
-					sleep(context);
+					sleep(context, 5000L);
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -59,10 +63,12 @@ public class Scraper implements Runnable {
 		}
 	}
 
-	private static void sleep(ScrapeContext context) {
+	private static void sleep(ScrapeContext context, Long defaultSleep) {
 		try {
-			Thread.sleep(context.getNextTimeoutReset()
-					.orElse(5000L));
+			Long sleep = context.getNextTimeoutReset()
+					.orElse(defaultSleep);
+			System.out.println("sleeping for " + sleep + " millis");
+			Thread.sleep(sleep);
 		} catch (InterruptedException ignored) {}
 	}
 }

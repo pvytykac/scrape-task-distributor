@@ -41,7 +41,9 @@ public class IcoServiceImpl implements IcoService {
                     .withId(nextIco)
                     .build();
 
-            repository.save(ico);
+            if (!repository.findOptional(nextIco).isPresent()) {
+                repository.save(ico);
+            }
 
             return Optional.of(ico);
         }

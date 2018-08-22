@@ -1,6 +1,7 @@
 package pvytykac.net.scrape.server.service.impl;
 
 import pvytykac.net.scrape.model.v1.PostScrapeStatusRepresentation;
+import pvytykac.net.scrape.model.v1.PostScrapeStatusRepresentation.PostScrapeStatusRepresentationBuilder;
 import pvytykac.net.scrape.model.v1.ScrapeError;
 import pvytykac.net.scrape.model.v1.ScrapeResult;
 import pvytykac.net.scrape.model.v1.ScrapeResultRepresentation;
@@ -69,14 +70,19 @@ public class TaskDistributionFacadeImpl implements TaskDistributionFacade {
             status = taskType.processSuccess(result);
         }
 
-        return (status == null || status.getTimeout() == null || status.getTimeout() == 0L)
-                ? new PostScrapeStatusRepresentation.PostScrapeStatusRepresentationBuilder()
-                        .build()
-                : new PostScrapeStatusRepresentation.PostScrapeStatusRepresentationBuilder()
-                        .withTimeoutAction(new TimeoutAction.TimeoutActionBuilder()
-                            .withTimeout(status.getTimeout())
-                            .withTaskType(dto.getTaskType())
-                            .build())
-                        .build();
+        PostScrapeStatusRepresentationBuilder response = new PostScrapeStatusRepresentationBuilder();
+
+        if (status != null && status.isRetriable()) {
+            response.withRetry(status.isRetriable());
+        }
+
+        if (status != null && status.getTimeout() != null && status.getTimeout() > 0L) {
+            response.withTimeoutAction(new TimeoutAction.TimeoutActionBuilder()
+                    .withTimeout(status.getTimeout() + dto.getRequestTimeUtcMs())
+                    .withTaskType(dto.getTaskType())
+                    .build());
+        }
+
+        return response.build();
     }
 }

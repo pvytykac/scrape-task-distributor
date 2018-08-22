@@ -18,7 +18,6 @@ import pvytykac.net.scrape.server.db.model.res.ResForm;
 import pvytykac.net.scrape.server.db.model.res.ResInstitution;
 import pvytykac.net.scrape.server.db.model.res.ResRegion;
 import pvytykac.net.scrape.server.db.model.res.ResUnit;
-import pvytykac.net.scrape.server.db.repository.ResRepository;
 import pvytykac.net.scrape.server.db.repository.impl.RepositoryFacade;
 import pvytykac.net.scrape.server.task.TaskType;
 import pvytykac.net.scrape.server.util.HtmlDocument;
@@ -34,7 +33,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static pvytykac.net.scrape.model.v1.enums.ExpectationType.BODY_CSS;
 import static pvytykac.net.scrape.model.v1.enums.ExpectationType.HEADER;
@@ -101,7 +99,10 @@ public class ResTaskType implements TaskType {
 				.max()
 				.orElse(0L);
 
-		return new Status(timeout > 0L ? timeout : null, false);
+		boolean retry = errors.stream()
+				.anyMatch(expec -> isRetry(expec.getExpectation().getId(), expec.getActual()));
+
+		return new Status(timeout > 0L ? timeout : null, retry);
 	}
 
 	@Override
@@ -298,8 +299,17 @@ public class ResTaskType implements TaskType {
 		switch (expectationId) {
 			case 1:
 			case 4:
-				return "404".equals(actual) ? 250L : 0L;
+				return "404".equals(actual) ? 200L : 0L;
 			default: return 0L;
+		}
+	}
+
+	private static boolean isRetry(Integer expectationId, String actual) {
+		switch (expectationId) {
+			case 1:
+			case 4:
+				return "404".equals(actual);
+			default: return false;
 		}
 	}
 

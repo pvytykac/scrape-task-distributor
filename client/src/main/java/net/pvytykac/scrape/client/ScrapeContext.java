@@ -39,6 +39,9 @@ public class ScrapeContext {
 		List<Long> timeouts = new ArrayList<>(scrapeTypeTimeouts.values());
 		Collections.sort(timeouts);
 
-		return timeouts.stream().findFirst();
+		return timeouts.stream()
+				.findFirst()
+				.map(timeout -> timeout - System.currentTimeMillis())
+				.filter(timeout -> timeout > 0);
 	}
 }
