@@ -22,14 +22,16 @@ public abstract class AbstractRepository<ID, ENTITY extends Dbo<ID>> implements 
 
 	@Override
 	public ENTITY find(ID id) {
-		return getSession().createQuery("FROM " + getEntityClass().getSimpleName() + " alias WHERE alias.id = :id", getEntityClass())
-				.setParameter("id", id)
-				.getSingleResult();
+		return findOptional(id).orElse(null);
 	}
 
 	@Override
 	public Optional<ENTITY> findOptional(ID id) {
-		return Optional.ofNullable(find(id));
+		return getSession().createQuery("FROM " + getEntityClass().getSimpleName() + " alias WHERE alias.id = :id", getEntityClass())
+				.setParameter("id", id)
+				.list()
+				.stream()
+				.findFirst();
 	}
 
 	@Override

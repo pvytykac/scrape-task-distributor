@@ -2,6 +2,7 @@ package pvytykac.net.scrape.model.v1;
 
 import net.pvytykac.scrape.util.ModelBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -87,6 +88,14 @@ public final class ScrapeTask {
         public ScrapeTaskBuilder withSteps(List<ScrapeStep> steps) {
             this.steps = steps;
 			return this;
+        }
+
+        public ScrapeTaskBuilder addStep(ScrapeStep step) {
+            if(this.steps == null) {
+                this.steps = new ArrayList<>();
+            }
+            steps.add(step);
+            return this;
         }
 
         @Override

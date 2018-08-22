@@ -1,6 +1,7 @@
 package pvytykac.net.scrape.server.task;
 
 import java.util.List;
+import java.util.Set;
 
 import pvytykac.net.scrape.model.v1.ClientException;
 import pvytykac.net.scrape.model.v1.FailedExpectation;
@@ -15,9 +16,18 @@ import pvytykac.net.scrape.server.db.model.ico.Ico;
  */
 public interface TaskType {
 
+    String getId();
+
+    String getOffsetIco();
+
+    Set<Integer> getApplicableFormIds();
+
     ScrapeTask createScrapeTask(Ico ico);
+
     Status processClientError(ClientException error, ScrapeStep step);
+
     Status processFailedExpectations(List<FailedExpectation> errors, ScrapeStep step);
+
     Status processSuccess(ScrapeResult result);
 
     final class Status {

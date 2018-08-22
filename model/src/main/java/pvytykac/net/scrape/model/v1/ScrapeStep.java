@@ -6,6 +6,7 @@ import pvytykac.net.scrape.model.v1.enums.HttpMethod;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -179,8 +180,24 @@ public final class ScrapeStep {
             return this;
         }
 
+        public ScrapeStepBuilder addExpectation(ScrapeExpectation expectation) {
+            if (expectations == null) {
+                expectations = new ArrayList<>();
+            }
+            expectations.add(expectation);
+            return this;
+        }
+
         public ScrapeStepBuilder withScrape(List<Scrape> scrape) {
             this.scrape = scrape;
+            return this;
+        }
+
+        public ScrapeStepBuilder addScrape(Scrape scrape) {
+            if (this.scrape == null) {
+                this.scrape = new ArrayList<>();
+            }
+            this.scrape.add(scrape);
             return this;
         }
 

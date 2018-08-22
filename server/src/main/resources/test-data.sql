@@ -9,7 +9,7 @@ DROP TABLE res_institution IF EXISTS;
 
 CREATE TABLE icos(
   ico VARCHAR(30) PRIMARY KEY NOT NULL,
-  form INT(11) NOT NULL,
+  form INT(11) DEFAULT NULL,
   last_updated DATETIME DEFAULT NULL,
   res_id INT(11) DEFAULT NULL
 );
@@ -57,9 +57,10 @@ CREATE TABLE res_attribute_value(
 );
 
 CREATE TABLE res_institution_attribute(
-  institution_id int(11) NOT NULL PRIMARY KEY,
+  institution_id int(11) NOT NULL,
   attribute_value_id varchar(30) NOT NULL,
-  CONSTRAINT `fk_institutionattribute_institution` FOREIGN KEY (`institution_id`) REFERENCES `res_institution`(`id`)
+  CONSTRAINT `fk_institutionattribute_institution` FOREIGN KEY (`institution_id`) REFERENCES `res_institution`(`id`),
+  PRIMARY KEY (institution_id, attribute_value_id)
 );
 
 INSERT INTO icos(ico, form, last_updated) VALUES('00000175', 331, '2016-07-09 01:02:03.111');

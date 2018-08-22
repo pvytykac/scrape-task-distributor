@@ -16,6 +16,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.util.List;
 
+import static net.pvytykac.scrape.util.ModelBuilderUtil.asImmutableList;
+
 @Entity
 @Table(name = "res_institution")
 public class ResInstitution implements Dbo<Integer> {
@@ -70,6 +72,7 @@ public class ResInstitution implements Dbo<Integer> {
 		this.form = builder.getForm();
 		this.region = builder.getRegion();
 		this.unit = builder.getUnit();
+		this.attributes = builder.getAttributes();
 	}
 
 	@Override
@@ -158,7 +161,7 @@ public class ResInstitution implements Dbo<Integer> {
 		}
 
 		public List<ResAttributeValue> getAttributes() {
-			return ImmutableList.copyOf(attributes);
+			return asImmutableList(attributes);
 		}
 
 		public Builder withIco(String ico) {

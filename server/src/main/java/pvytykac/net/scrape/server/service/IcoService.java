@@ -2,6 +2,7 @@ package pvytykac.net.scrape.server.service;
 
 import pvytykac.net.scrape.server.db.model.ico.Ico;
 
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -10,8 +11,6 @@ import java.util.Set;
  */
 public interface IcoService {
 
-    Ico getIco(String offsetIco, Set<Integer> formIds);
-
-    Ico getIco(String offsetIco);
+    Optional<Ico> getIco(String offsetIco, Set<Integer> formIds);
 
 }
