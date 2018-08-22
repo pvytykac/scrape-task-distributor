@@ -22,13 +22,13 @@ public class ScrapeTaskDistributorConfiguration extends Configuration {
 	@Valid
 	@NotEmpty
 	@NotNull
-	private List<ScrapeTaskConfiguration> scrapeTaskConfigurations;
+	private List<TaskTypeConfiguration> taskTypes;
 
 	public DataSourceFactory getDatabase() {
 		return database;
 	}
 
-	public List<ScrapeTaskConfiguration> getScrapeTaskConfigurations() {
-		return scrapeTaskConfigurations;
+	public List<TaskTypeConfiguration> getTaskTypes() {
+		return taskTypes;
 	}
 }

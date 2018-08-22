@@ -1,6 +1,7 @@
-package pvytykac.net.scrape.server.db.model;
+package pvytykac.net.scrape.server.db.model.ico;
 
 import org.joda.time.DateTime;
+import pvytykac.net.scrape.server.db.model.DboBuilder;
 import pvytykac.net.scrape.server.db.repository.Dbo;
 
 import javax.persistence.Column;

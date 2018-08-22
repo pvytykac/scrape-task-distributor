@@ -10,22 +10,22 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import pvytykac.net.scrape.model.v1.SupportedScrapeTypesRepresentation;
-import pvytykac.net.scrape.server.service.ScrapeTypeService;
+import pvytykac.net.scrape.server.service.TaskTypeService;
 
 @Path("/v1/scrape-types")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ScrapeTypesResource {
 
-    private final ScrapeTypeService service;
+    private final TaskTypeService service;
 
-    public ScrapeTypesResource(ScrapeTypeService service) {
+    public ScrapeTypesResource(TaskTypeService service) {
         this.service = service;
     }
 
     @GET
     public Response getSupportedTaskTypes() {
-        Set<String> types = service.getScrapeTypes();
+        Set<String> types = service.getTaskTypes();
 
         Response.ResponseBuilder builder = types.isEmpty()
             ? Response.noContent()
@@ -35,5 +35,4 @@ public class ScrapeTypesResource {
 
         return builder.build();
     }
-
 }

@@ -26,59 +26,11 @@ database:
   url: jdbc:h2:mem:test;MODE=MySQL;INIT=runscript from 'classpath:test-data.sql'
   properties:
     charSet: UTF-8
-    timeZone: UTC
     hibernate.dialect: org.hibernate.dialect.MySQLDialect
     minSize: 1
     maxSize: 5
     maxWaitForConnection: 1s
 
-scrapeTaskConfigurations:
-  - scrapeType: "RES"
-    handlerClass: "pvytykac.net.scrape.server.service.handlers.ResResultHandler"
-    stepDefinitions:
-      - sequenceNumber: 1
-        method: "POST"
-        uri: "http://apl.czso.cz/irsw/hledat.jsp"
-        contentType: "application/x-www-form-urlencoded"
-        payload: "ico=${ico}&nazev=&forma=&okres=&texttype=0&zanik=0&run_rswquery=Hledej"
-        expectations:
-          - id: 1
-            type: STATUS_CODE
-            expectedValue: "200"
-            operator: EQUALS
-            expected: true
-          - id: 2
-            type: HEADER
-            target: "Content-Type"
-            expectedValue: "text/html"
-            operator: CONTAINS
-            expected: true
-          - id: 3
-            type: BODY_CSS
-            target: "a[href^='detail.jsp?prajed_id=']"
-            operator: NOT_BLANK
-            expected: true
-        scrape:
-          - type: HREF
-            target: "a[href^='detail.jsp?prajed_id=']"
-            storeAs: "detailHref"
-      - sequenceNumber: 2
-        method: "GET"
-        uri: "http://apl.czso.cz/irsw/${detailHref}"
-        expectations:
-          - id: 4
-            type: STATUS_CODE
-            expectedValue: 200
-            operator: EQUALS
-            expected: true
-          - id: 5
-            type: HEADER
-            target: "Content-Type"
-            expectedValue: "text/html"
-            operator: CONTAINS
-            expected: true
-          - id: 6
-            type: BODY_CSS
-            target: "table[summary='identifikace'] tr:nth-child(1) td:nth-child(3)"
-            operator: NOT_BLANK
-            expected: true
+taskTypes:
+  - id: "RES"
+    className: "pvytykac.net.scrape.server.task.impl.ResTaskType"

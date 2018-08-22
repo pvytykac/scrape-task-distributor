@@ -15,8 +15,8 @@ import org.junit.Test;
 
 import pvytykac.net.scrape.server.db.DbTest;
 import pvytykac.net.scrape.server.db.repository.IcoRepository;
-import pvytykac.net.scrape.server.db.model.Ico;
-import pvytykac.net.scrape.server.db.repository.RepositoryFacade;
+import pvytykac.net.scrape.server.db.model.ico.Ico;
+import pvytykac.net.scrape.server.db.repository.impl.RepositoryFacade;
 
 /**
  * @author Paly

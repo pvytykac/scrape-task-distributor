@@ -7,7 +7,7 @@ import org.hibernate.query.Query;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import pvytykac.net.scrape.server.db.model.Ico;
+import pvytykac.net.scrape.server.db.model.ico.Ico;
 import pvytykac.net.scrape.server.db.repository.IcoRepository;
 
 /**

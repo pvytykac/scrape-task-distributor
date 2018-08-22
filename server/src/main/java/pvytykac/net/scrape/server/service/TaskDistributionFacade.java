@@ -3,9 +3,9 @@ package pvytykac.net.scrape.server.service;
 import pvytykac.net.scrape.model.v1.PostScrapeStatusRepresentation;
 import pvytykac.net.scrape.model.v1.ScrapeResultRepresentation;
 import pvytykac.net.scrape.model.v1.ScrapeSessionRepresentation;
+import pvytykac.net.scrape.model.v1.ScrapeTask;
 
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * @author Paly
@@ -13,10 +13,8 @@ import java.util.Set;
  */
 public interface TaskDistributionFacade {
 
-    Optional<ScrapeSessionRepresentation> getScrapeTasks(Set<String> ignoredTypes, int limit);
+    Optional<ScrapeTask> getScrapeTask(String taskType);
 
-    Optional<PostScrapeStatusRepresentation> processScrapeResult(ScrapeResultRepresentation result);
-
-    Set<String> getScrapeTypesSupportedByPlatform();
+    Optional<PostScrapeStatusRepresentation> processScrapeTaskResult(ScrapeResultRepresentation result);
 
 }

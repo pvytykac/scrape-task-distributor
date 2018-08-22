@@ -3,8 +3,10 @@ package net.pvytykac.scrape.client;
 import okhttp3.OkHttpClient;
 import pvytykac.net.scrape.model.v1.PostScrapeStatusRepresentation;
 import pvytykac.net.scrape.model.v1.ScrapeResultRepresentation;
-import pvytykac.net.scrape.model.v1.ScrapeSessionRepresentation;
+import pvytykac.net.scrape.model.v1.ScrapeTask;
 import pvytykac.net.scrape.model.v1.TimeoutAction;
+
+import java.util.UUID;
 
 public class Scraper implements Runnable {
 
@@ -32,24 +34,21 @@ public class Scraper implements Runnable {
 		ScrapeContext context = new ScrapeContext();
 
 		while (running) {
-			ScrapeSessionRepresentation session = client.getScrapeSession(5, context.getIgnoredTypes());
+			ScrapeTask task = client.getScrapeSession("RES");
 
-			if (session != null) {
-				session.getTasks()
-						.forEach(task -> {
-							try {
-								ScrapeResultRepresentation result = scrapeTaskProcessor
-										.processTask(session.getSessionUuid(), task);
-								PostScrapeStatusRepresentation status = client
-										.postScrapeResult(task.getTaskUuid(), result);
-								if (status != null) {
-									TimeoutAction action = status.getTimeoutAction();
-									context.addTimeout(action.getTaskType(), action.getTimeout());
-								}
-							} catch (Exception ex) {
-								ex.printStackTrace();
-							}
-						});
+			if (task != null) {
+				try {
+					ScrapeResultRepresentation result = scrapeTaskProcessor
+							.processTask(UUID.randomUUID().toString(), task);
+					PostScrapeStatusRepresentation status = client
+							.postScrapeResult(task.getTaskUuid(), result);
+					if (status != null) {
+						TimeoutAction action = status.getTimeoutAction();
+						context.addTimeout(action.getTaskType(), action.getTimeout());
+					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
 			} else {
 				sleep(context);
 			}

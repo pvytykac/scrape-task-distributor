@@ -1,6 +1,5 @@
-package pvytykac.net.scrape.server.service.handlers;
+package pvytykac.net.scrape.server.task.impl;
 
-import com.google.common.collect.ImmutableMap;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,13 +7,16 @@ import pvytykac.net.scrape.model.v1.ClientException;
 import pvytykac.net.scrape.model.v1.FailedExpectation;
 import pvytykac.net.scrape.model.v1.ScrapeResult;
 import pvytykac.net.scrape.model.v1.ScrapeStep;
+import pvytykac.net.scrape.model.v1.ScrapeTask;
+import pvytykac.net.scrape.server.db.model.ico.Ico;
+import pvytykac.net.scrape.server.db.model.res.ResAttributeValue;
 import pvytykac.net.scrape.server.db.model.res.ResForm;
 import pvytykac.net.scrape.server.db.model.res.ResInstitution;
 import pvytykac.net.scrape.server.db.model.res.ResRegion;
 import pvytykac.net.scrape.server.db.model.res.ResUnit;
-import pvytykac.net.scrape.server.db.repository.RepositoryFacade;
+import pvytykac.net.scrape.server.db.repository.impl.RepositoryFacade;
 import pvytykac.net.scrape.server.db.repository.ResRepository;
-import pvytykac.net.scrape.server.service.ScrapeResultHandler;
+import pvytykac.net.scrape.server.task.TaskType;
 import pvytykac.net.scrape.server.util.HtmlDocument;
 import pvytykac.net.scrape.server.util.HtmlDocument.HtmlTable;
 import pvytykac.net.scrape.server.util.HtmlDocument.HtmlTableRow;
@@ -25,15 +27,79 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-public class ResResultHandler implements ScrapeResultHandler {
+public class ResTaskType implements TaskType {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ResResultHandler.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ResTaskType.class);
 
 	private final ResRepository repository;
 
-	public ResResultHandler(RepositoryFacade repositoryFacade) {
+	public ResTaskType(RepositoryFacade repositoryFacade) {
 		this.repository = repositoryFacade.getResRepository();
+	}
+
+	@Override
+	public ScrapeTask createScrapeTask(Ico ico) {
+		return ico.getResId() == null
+			? createTaskForUnknownId(ico.getId())
+			: createTaskForKnownId(ico.getResId());
+	}
+
+	private ScrapeTask createTaskForUnknownId(String ico) {
+// todo: build task from below steps
+//		stepDefinitions:
+//		- sequenceNumber: 1
+//		method: "POST"
+//		uri: "http://apl.czso.cz/irsw/hledat.jsp"
+//		contentType: "application/x-www-form-urlencoded"
+//		payload: "ico=${ico}&nazev=&forma=&okres=&texttype=0&zanik=0&run_rswquery=Hledej"
+//		expectations:
+//		- id: 1
+//		type: STATUS_CODE
+//		expectedValue: "200"
+//		operator: EQUALS
+//		expected: true
+//				- id: 2
+//		type: HEADER
+//		target: "Content-Type"
+//		expectedValue: "text/html"
+//		operator: CONTAINS
+//		expected: true
+//				- id: 3
+//		type: BODY_CSS
+//		target: "a[href^='detail.jsp?prajed_id=']"
+//		operator: NOT_BLANK
+//		expected: true
+//		scrape:
+//		- type: HREF
+//		target: "a[href^='detail.jsp?prajed_id=']"
+//		storeAs: "detailHref"
+//				- sequenceNumber: 2
+//		method: "GET"
+//		uri: "http://apl.czso.cz/irsw/${detailHref}"
+//		expectations:
+//		- id: 4
+//		type: STATUS_CODE
+//		expectedValue: 200
+//		operator: EQUALS
+//		expected: true
+//				- id: 5
+//		type: HEADER
+//		target: "Content-Type"
+//		expectedValue: "text/html"
+//		operator: CONTAINS
+//		expected: true
+//				- id: 6
+//		type: BODY_CSS
+//		target: "table[summary='identifikace'] tr:nth-child(1) td:nth-child(3)"
+//		operator: NOT_BLANK
+//		expected: true
+		return null;
+	}
+
+	private ScrapeTask createTaskForKnownId(Integer id) {
+		return null;
 	}
 
 	@Override
@@ -65,7 +131,7 @@ public class ResResultHandler implements ScrapeResultHandler {
 		Integer id = document.getFormByName("form_detail")
 				.getInputByName("vypis")
 				.attrOptional("onclick")
-				.map(ResResultHandler::findId)
+				.map(ResTaskType::findId)
 				.orElse(null);
 
 		HtmlTable idTable = document.getTableBySummary("identifikace");
@@ -104,10 +170,16 @@ public class ResResultHandler implements ScrapeResultHandler {
 			attributes.get(attrName).add(code + " - " + text);
 		}
 
-		attributes = ImmutableMap.copyOf(attributes);
-
 		LOG.info("parsed out res institution: '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}'",
 				ico, name, formId, formName, created, ceased, address, regionCode, region, unitCode, unit, attributes);
+
+		List<ResAttributeValue> resAttributes = attributes.entrySet().stream()
+				.flatMap(attr -> attr.getValue().stream()
+						.map(attrValue -> new ResAttributeValue.Builder()
+						.withId(attr.getKey())
+						.withText(attrValue)
+						.build()))
+				.collect(Collectors.toList());
 
 		ResInstitution institution = new ResInstitution.Builder()
 				.withId(id)
@@ -128,6 +200,7 @@ public class ResResultHandler implements ScrapeResultHandler {
 						.withId(unitCode)
 						.withText(unit)
 						.build())
+				.withAttributes(resAttributes)
 				.build();
 
 		repository.save(institution);
@@ -145,7 +218,6 @@ public class ResResultHandler implements ScrapeResultHandler {
 	}
 
 	private static Integer findId(String str) {
-		System.out.println(str);
 		String prefix = "prajed_id=";
 		int start = str.indexOf(prefix) + prefix.length();
 		int end = str.indexOf('&', start);

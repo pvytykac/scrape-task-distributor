@@ -1,6 +1,6 @@
 package pvytykac.net.scrape.server.db.repository;
 
-import pvytykac.net.scrape.server.db.model.Ico;
+import pvytykac.net.scrape.server.db.model.ico.Ico;
 
 import java.util.List;
 

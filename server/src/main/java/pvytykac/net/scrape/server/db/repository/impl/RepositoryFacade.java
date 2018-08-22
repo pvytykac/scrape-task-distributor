@@ -1,7 +1,9 @@
-package pvytykac.net.scrape.server.db.repository;
+package pvytykac.net.scrape.server.db.repository.impl;
 
 import org.hibernate.SessionFactory;
 
+import pvytykac.net.scrape.server.db.repository.IcoRepository;
+import pvytykac.net.scrape.server.db.repository.ResRepository;
 import pvytykac.net.scrape.server.db.repository.impl.IcoRepositoryImpl;
 import pvytykac.net.scrape.server.db.repository.impl.ResRepositoryImpl;
 
