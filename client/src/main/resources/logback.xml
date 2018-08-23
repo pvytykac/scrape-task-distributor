@@ -1,12 +1,19 @@
 <configuration>
+    <appender name="APPLICATION_LOG" class="ch.qos.logback.core.FileAppender">
+        <file>client-logs/client.log</file>
 
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/application.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP"/>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
     </appender>
 
-    <root level="INFO">
-        <appender-ref ref="STDOUT" />
+    <root level="DEBUG">
+        <appender-ref ref="APPLICATION_LOG"/>
     </root>
 </configuration>

@@ -5,14 +5,37 @@ server:
   adminConnectors:
   - type: http
     port: 9081
+  requestLog:
+    appenders:
+    - type: file
+      currentLogFilename: server-logs/access.test.log
+      archivedLogFilenamePattern: server-logs/access.test.%d.log
+      archive: true
+      archivedFileCount: 7
 
 logging:
-  level: INFO
+  level: WARN
   loggers:
-    net.pvytykac.*: TRACE
-    org.hibernate.engine.internal.StatisticalLoggingSessionEventListener: WARN
+    org.hibernate.SQL:
+      level: TRACE
+      appenders:
+        - type: file
+          currentLogFilename: server-logs/sql.test.log
+          archivedLogFilenamePattern: server-logs/sql.test.%d.log.gz
+          archivedFileCount: 7
+    pvytykac.net:
+      level: DEBUG
+      appenders:
+        - type: file
+          currentLogFilename: server-logs/application.test.log
+          archivedLogFilenamePattern: server-logs/application.test.%d.log.gz
+          archivedFileCount: 7
   appenders:
-    - type: console
+  - type: file
+    threshold: WARN
+    currentLogFilename: server-logs/error.test.log
+    archivedLogFilenamePattern: server-logs/error.test.%d.log.gz
+    archivedFileCount: 7
 
 metrics:
   frequency: 1 hour
@@ -30,7 +53,10 @@ database:
     minSize: 1
     maxSize: 5
     maxWaitForConnection: 1s
+    showSql: true
 
 taskTypes:
   - id: "RES"
     className: "pvytykac.net.scrape.server.task.impl.ResTaskType"
+  - id: "JUSTICE"
+    className: "pvytykac.net.scrape.server.task.impl.JusticeTaskType"

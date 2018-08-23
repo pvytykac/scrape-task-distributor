@@ -6,14 +6,36 @@ server:
   - type: http
     port: 8081
   requestLog:
-    appenders: []
+    appenders:
+    - type: file
+      currentLogFilename: server-logs/access.log
+      archivedLogFilenamePattern: server-logs/access.%d.log
+      archive: true
+      archivedFileCount: 7
 
 logging:
   level: WARN
   loggers:
-    org.hibernate.engine.internal.StatisticalLoggingSessionEventListener: WARN
+    org.hibernate.SQL:
+      level: TRACE
+      appenders:
+        - type: file
+          currentLogFilename: server-logs/sql.log
+          archivedLogFilenamePattern: server-logs/sql.%d.log.gz
+          archivedFileCount: 7
+    pvytykac.net:
+      level: DEBUG
+      appenders:
+        - type: file
+          currentLogFilename: server-logs/application.log
+          archivedLogFilenamePattern: server-logs/application.%d.log.gz
+          archivedFileCount: 7
   appenders:
-    - type: console
+  - type: file
+    threshold: WARN
+    currentLogFilename: server-logs/error.log
+    archivedLogFilenamePattern: server-logs/error.%d.log.gz
+    archivedFileCount: 7
 
 metrics:
   frequency: 1 hour
@@ -31,7 +53,7 @@ database:
     minSize: 1
     maxSize: 5
     maxWaitForConnection: 1s
-    hibernate.show_sql: false
+    hibernate.show_sql: true
 
 taskTypes:
   - id: "RES"

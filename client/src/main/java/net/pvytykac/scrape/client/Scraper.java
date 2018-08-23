@@ -1,14 +1,19 @@
 package net.pvytykac.scrape.client;
 
+import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import okhttp3.OkHttpClient;
 import pvytykac.net.scrape.model.v1.PostScrapeStatusRepresentation;
 import pvytykac.net.scrape.model.v1.ScrapeResultRepresentation;
 import pvytykac.net.scrape.model.v1.ScrapeTask;
 import pvytykac.net.scrape.model.v1.TimeoutAction;
 
-import java.util.UUID;
-
 public class Scraper implements Runnable {
+
+	private static final Logger LOG = LoggerFactory.getLogger(Scraper.class);
 
 	private final ScrapeTaskDistributorClientV1 client;
 	private final ScrapeTaskProcessor scrapeTaskProcessor;
@@ -52,13 +57,13 @@ public class Scraper implements Runnable {
 							context.addTimeout(action.getTaskType(), action.getTimeout());
 						}
 					} catch (Exception ex) {
-						ex.printStackTrace();
+						LOG.error("Error when processing task '{}'", task.getTaskUuid(), ex);
 					}
 				} else {
 					sleep(context, 5000L);
 				}
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				LOG.error("Error when fetching task", ex);
 			}
 		}
 	}
