@@ -43,6 +43,10 @@ public abstract class AbstractRepository<ID, ENTITY extends Dbo<ID>> implements 
 		return getSession().createQuery(query, getEntityClass());
 	}
 
+	protected Query untypedQuery(String query) {
+		return getSession().createQuery(query);
+	}
+
 	protected List<ENTITY> list(Query<ENTITY> query) {
 		return query.list();
 	}

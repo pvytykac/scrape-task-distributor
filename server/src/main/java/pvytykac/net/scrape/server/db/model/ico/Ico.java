@@ -1,12 +1,16 @@
 package pvytykac.net.scrape.server.db.model.ico;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+
 import pvytykac.net.scrape.server.db.model.DboBuilder;
 import pvytykac.net.scrape.server.db.repository.Dbo;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 /**
@@ -54,6 +58,11 @@ public class Ico implements Dbo<String> {
 
     public Integer getResId() {
         return resId;
+    }
+
+    @PrePersist @PreUpdate
+    public void prePersist() {
+        this.lastUpdated = DateTime.now(DateTimeZone.UTC);
     }
 
     public static class Builder extends DboBuilder<Builder, String, Ico> {

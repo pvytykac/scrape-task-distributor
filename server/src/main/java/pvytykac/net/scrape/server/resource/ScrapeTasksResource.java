@@ -1,16 +1,14 @@
-package pvytykac.net.scrape.server.resources;
+package pvytykac.net.scrape.server.resource;
 
 import io.dropwizard.hibernate.UnitOfWork;
 import pvytykac.net.scrape.model.v1.PostScrapeStatusRepresentation;
 import pvytykac.net.scrape.model.v1.ScrapeResultRepresentation;
-import pvytykac.net.scrape.model.v1.ScrapeSessionRepresentation;
 import pvytykac.net.scrape.model.v1.ScrapeTask;
 import pvytykac.net.scrape.server.service.TaskDistributionFacade;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;

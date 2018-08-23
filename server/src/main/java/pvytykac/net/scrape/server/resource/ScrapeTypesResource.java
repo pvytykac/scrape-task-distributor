@@ -1,4 +1,4 @@
-package pvytykac.net.scrape.server.resources;
+package pvytykac.net.scrape.server.resource;
 
 import java.util.Set;
 

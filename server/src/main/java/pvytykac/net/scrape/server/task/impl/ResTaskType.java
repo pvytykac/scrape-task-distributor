@@ -182,7 +182,7 @@ public class ResTaskType implements TaskType {
 				.withAttributes(attributeValues)
 				.build();
 
-		facade.getIcoRepository().save(new Ico.Builder().withId(ico).withResId(id).withForm(Integer.valueOf(formId)).build());
+		facade.getIcoRepository().updateFromRes(ico, formId == null ? null : Integer.valueOf(formId), id);
 		facade.getResRepository().save(institution);
 
 		LOG.info("Successfully scraped RES institution '{}'", ico);
