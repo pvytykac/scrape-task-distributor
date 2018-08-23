@@ -41,32 +41,16 @@ import pvytykac.net.scrape.server.db.model.res.ResInstitution;
 import pvytykac.net.scrape.server.db.model.res.ResRegion;
 import pvytykac.net.scrape.server.db.model.res.ResUnit;
 import pvytykac.net.scrape.server.db.repository.impl.RepositoryFacade;
-import pvytykac.net.scrape.server.task.TaskType;
 import pvytykac.net.scrape.server.util.HtmlDocument;
 import pvytykac.net.scrape.server.util.HtmlDocument.HtmlTable;
 import pvytykac.net.scrape.server.util.HtmlDocument.HtmlTableRow;
 
-public class ResTaskType implements TaskType {
+public class ResTaskType extends AbstractTaskType {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ResTaskType.class);
 
-	private final String id;
-	private final RepositoryFacade facade;
-	private String offsetIco;
-
 	public ResTaskType(String id, RepositoryFacade facade) {
-		this.id = id;
-		this.facade = facade;
-	}
-
-	@Override
-	public String getId() {
-		return id;
-	}
-
-	@Override
-	public String getOffsetIco() {
-		return offsetIco;
+		super(id, facade);
 	}
 
 	@Override
@@ -75,23 +59,22 @@ public class ResTaskType implements TaskType {
 	}
 
 	@Override
-	public ScrapeTask createScrapeTask(Ico ico) {
-		this.offsetIco = ico.getId();
-		return ico.getResId() == null
-			? createTaskForUnknownId(ico.getId())
-			: createTaskForKnownId(ico.getResId());
+	protected boolean isKnownIco(Ico ico) {
+		return ico.getResId() != null;
 	}
 
 	@Override
-	public Status processClientError(ClientException error, ScrapeStep step) {
-		LOG.info("scrape task failed because of client error during step '{}': {}\n{}", step.getSequenceNumber(),
-				error.getMessage(), error.getStackTrace());
+	protected boolean isResultResponseValid(ScrapeResult result) {
+		return result.getStatusCode() == 200;
+	}
 
+	@Override
+	public Status onClientError(ClientException error, ScrapeStep step) {
 		return new Status(null, false);
 	}
 
 	@Override
-	public Status processFailedExpectations(List<FailedExpectation> errors, ScrapeStep step) {
+	public Status onExpectationsFailed(List<FailedExpectation> errors, ScrapeStep step) {
 		Long timeout = errors.stream()
 				.mapToLong(expec -> getTimeout(expec.getExpectation().getId(), expec.getActual()))
 				.filter(Objects::nonNull)
@@ -105,7 +88,12 @@ public class ResTaskType implements TaskType {
 	}
 
 	@Override
-	public Status processSuccess(ScrapeResult result) {
+	protected Status onInvalidResult(ScrapeResult result) {
+		return new Status(0L, false);
+	}
+
+	@Override
+	public Status onSuccess(ScrapeResult result) {
 		HtmlDocument document = new HtmlDocument(result.getPayload());
 
 		Integer id = document.getFormByName("form_detail")
@@ -189,7 +177,8 @@ public class ResTaskType implements TaskType {
 		return new Status(0L, false);
 	}
 
-	private ScrapeTask createTaskForUnknownId(String ico) {
+	@Override
+	protected ScrapeTask createTaskForNewIco(String ico) {
 		return new ScrapeTask.ScrapeTaskBuilder()
 				.withTaskUuid(UUID.randomUUID().toString())
 				.withTaskType(getId())
@@ -257,11 +246,12 @@ public class ResTaskType implements TaskType {
 				.build();
 	}
 
-	private ScrapeTask createTaskForKnownId(Integer id) {
+	@Override
+	protected ScrapeTask createTaskForKnownIco(Ico ico) {
 		return new ScrapeTask.ScrapeTaskBuilder()
 				.withTaskUuid(UUID.randomUUID().toString())
 				.withTaskType(getId())
-				.withParameters(ImmutableMap.of("id", id.toString()))
+				.withParameters(ImmutableMap.of("id", String.valueOf(ico.getResId())))
 				.addStep(new ScrapeStep.ScrapeStepBuilder()
 						.withSequenceNumber(1)
 						.withMethod(GET)
