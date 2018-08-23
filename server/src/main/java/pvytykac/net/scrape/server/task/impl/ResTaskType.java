@@ -155,7 +155,7 @@ public class ResTaskType implements TaskType {
 			String text = attributeRow.selectColumn(3).text();
 
 			attributeValues.add(new ResAttributeValue.Builder()
-					.withId(code)
+					.withCode(code)
 					.withAttribute(attributes.get(attrId))
 					.withText(text)
 					.build());

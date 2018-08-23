@@ -1,3 +1,4 @@
+SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE res_institution_attribute IF EXISTS;
 DROP TABLE res_attribute_value IF EXISTS;
 DROP TABLE res_attribute IF EXISTS;
@@ -6,6 +7,7 @@ DROP TABLE res_form IF EXISTS;
 DROP TABLE res_region IF EXISTS;
 DROP TABLE res_unit IF EXISTS;
 DROP TABLE res_institution IF EXISTS;
+SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE TABLE icos(
   ico VARCHAR(30) PRIMARY KEY NOT NULL,
@@ -50,17 +52,20 @@ CREATE TABLE res_attribute(
 );
 
 CREATE TABLE res_attribute_value(
-  code varchar(30) NOT NULL PRIMARY KEY,
+  code varchar(30) NOT NULL,
+  attribute_id varchar(30) NOT NULL,
   text varchar(255) DEFAULT NULL,
-  attribute_id VARCHAR(30) NOT NULL,
+  PRIMARY KEY (code, attribute_id),
   CONSTRAINT `fk_attributevalue_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `res_attribute`(`code`)
 );
 
 CREATE TABLE res_institution_attribute(
   institution_id int(11) NOT NULL,
   attribute_value_id varchar(30) NOT NULL,
+  attribute_id varchar(30) NOT NULL,
+  PRIMARY KEY (institution_id, attribute_value_id, attribute_id),
   CONSTRAINT `fk_institutionattribute_institution` FOREIGN KEY (`institution_id`) REFERENCES `res_institution`(`id`),
-  PRIMARY KEY (institution_id, attribute_value_id)
+  CONSTRAINT `fk_institutionattribute_attributevalue` FOREIGN KEY (`attribute_value_id`, `attribute_id`) REFERENCES `res_attribute_value`(`code`, `attribute_id`)
 );
 
 INSERT INTO icos(ico, form, last_updated) VALUES('00000175', 331, '2016-07-09 01:02:03.111');

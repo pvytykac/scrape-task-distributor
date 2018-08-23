@@ -56,7 +56,10 @@ public class ResInstitution implements Dbo<Integer> {
 	@JoinTable(
 			name = "res_institution_attribute",
 			joinColumns = @JoinColumn(name = "institution_id", referencedColumnName = "id"),
-			inverseJoinColumns = @JoinColumn(name = "attribute_value_id", referencedColumnName = "code")
+			inverseJoinColumns = {
+					@JoinColumn(name = "attribute_value_id", referencedColumnName = "code"),
+					@JoinColumn(name = "attribute_id", referencedColumnName = "attribute_id")
+			}
 	)
 	private List<ResAttributeValue> attributes;
 

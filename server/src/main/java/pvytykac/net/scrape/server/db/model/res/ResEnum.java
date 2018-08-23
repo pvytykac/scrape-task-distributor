@@ -1,5 +1,7 @@
 package pvytykac.net.scrape.server.db.model.res;
 
+import java.util.Objects;
+
 import pvytykac.net.scrape.server.db.model.DboBuilder;
 import pvytykac.net.scrape.server.db.repository.Dbo;
 
