@@ -15,7 +15,7 @@ public interface ScrapeTaskDistributorClientV1 {
 	@Headers("Content-Type: application/json")
 	SupportedScrapeTypesRepresentation getSupportedScrapeTypes();
 
-	@RequestLine("GET /v1/scrape-tasks?taskType={taskType}")
+	@RequestLine("POST /v1/scrape-tasks?taskType={taskType}")
 	@Headers("Content-Type: application/json")
 	ScrapeTask getScrapeSession(@Param("taskType") String taskType);
 

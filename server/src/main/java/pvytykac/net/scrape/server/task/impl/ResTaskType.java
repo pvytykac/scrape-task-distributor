@@ -1,9 +1,31 @@
 package pvytykac.net.scrape.server.task.impl;
 
-import com.google.common.collect.ImmutableMap;
+import static pvytykac.net.scrape.model.v1.enums.ExpectationType.BODY_CSS;
+import static pvytykac.net.scrape.model.v1.enums.ExpectationType.HEADER;
+import static pvytykac.net.scrape.model.v1.enums.ExpectationType.STATUS_CODE;
+import static pvytykac.net.scrape.model.v1.enums.HttpMethod.GET;
+import static pvytykac.net.scrape.model.v1.enums.HttpMethod.POST;
+import static pvytykac.net.scrape.model.v1.enums.Operator.CONTAINS;
+import static pvytykac.net.scrape.model.v1.enums.Operator.EQUALS;
+import static pvytykac.net.scrape.model.v1.enums.Operator.NOT_BLANK;
+import static pvytykac.net.scrape.model.v1.enums.ScrapeType.HREF;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.ImmutableMap;
+
 import pvytykac.net.scrape.model.v1.ClientException;
 import pvytykac.net.scrape.model.v1.FailedExpectation;
 import pvytykac.net.scrape.model.v1.Scrape;
@@ -23,26 +45,6 @@ import pvytykac.net.scrape.server.task.TaskType;
 import pvytykac.net.scrape.server.util.HtmlDocument;
 import pvytykac.net.scrape.server.util.HtmlDocument.HtmlTable;
 import pvytykac.net.scrape.server.util.HtmlDocument.HtmlTableRow;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-
-import static pvytykac.net.scrape.model.v1.enums.ExpectationType.BODY_CSS;
-import static pvytykac.net.scrape.model.v1.enums.ExpectationType.HEADER;
-import static pvytykac.net.scrape.model.v1.enums.ExpectationType.STATUS_CODE;
-import static pvytykac.net.scrape.model.v1.enums.HttpMethod.GET;
-import static pvytykac.net.scrape.model.v1.enums.HttpMethod.POST;
-import static pvytykac.net.scrape.model.v1.enums.Operator.CONTAINS;
-import static pvytykac.net.scrape.model.v1.enums.Operator.EQUALS;
-import static pvytykac.net.scrape.model.v1.enums.Operator.NOT_BLANK;
-import static pvytykac.net.scrape.model.v1.enums.ScrapeType.HREF;
 
 public class ResTaskType implements TaskType {
 
@@ -82,7 +84,7 @@ public class ResTaskType implements TaskType {
 
 	@Override
 	public Status processClientError(ClientException error, ScrapeStep step) {
-		LOG.error("scrape task failed because of client error during step '{}': {}\n{}", step.getSequenceNumber(),
+		LOG.info("scrape task failed because of client error during step '{}': {}\n{}", step.getSequenceNumber(),
 				error.getMessage(), error.getStackTrace());
 
 		return new Status(null, false);
@@ -90,9 +92,6 @@ public class ResTaskType implements TaskType {
 
 	@Override
 	public Status processFailedExpectations(List<FailedExpectation> errors, ScrapeStep step) {
-		LOG.error("scrape task failed because of '{}' unmet expectations during step '{}' ", errors.size(),
-				step.getSequenceNumber());
-
 		Long timeout = errors.stream()
 				.mapToLong(expec -> getTimeout(expec.getExpectation().getId(), expec.getActual()))
 				.filter(Objects::nonNull)
@@ -161,9 +160,6 @@ public class ResTaskType implements TaskType {
 					.build());
 		}
 
-		LOG.info("parsed out res institution: '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}'",
-				ico, name, formId, formName, created, ceased, address, regionCode, region, unitCode, unit, attributes);
-
 		ResInstitution institution = new ResInstitution.Builder()
 				.withId(id)
 				.withIco(ico)
@@ -189,6 +185,7 @@ public class ResTaskType implements TaskType {
 		facade.getIcoRepository().save(new Ico.Builder().withId(ico).withResId(id).withForm(Integer.valueOf(formId)).build());
 		facade.getResRepository().save(institution);
 
+		LOG.info("Successfully scraped RES institution '{}'", ico);
 		return new Status(0L, false);
 	}
 

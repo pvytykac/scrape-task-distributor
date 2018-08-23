@@ -67,7 +67,6 @@ public class Scraper implements Runnable {
 		try {
 			Long sleep = context.getNextTimeoutReset()
 					.orElse(defaultSleep);
-			System.out.println("sleeping for " + sleep + " millis");
 			Thread.sleep(sleep);
 		} catch (InterruptedException ignored) {}
 	}

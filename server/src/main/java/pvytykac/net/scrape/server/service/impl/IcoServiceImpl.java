@@ -31,7 +31,7 @@ public class IcoServiceImpl implements IcoService {
 
     private Optional<Ico> generateAndFetchNextIco(String offsetIco) {
         String nextIco = offsetIco == null
-                ? new GeneratedIco().toString()
+                ? new GeneratedIco("00061778").increment().toString()
                 : new GeneratedIco(offsetIco).increment().toString();
 
         if (nextIco == null) {

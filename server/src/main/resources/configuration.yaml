@@ -5,11 +5,12 @@ server:
   adminConnectors:
   - type: http
     port: 8081
+  requestLog:
+    appenders: []
 
 logging:
-  level: INFO
+  level: WARN
   loggers:
-    net.pvytykac.*: TRACE
     org.hibernate.engine.internal.StatisticalLoggingSessionEventListener: WARN
   appenders:
     - type: console
@@ -30,6 +31,7 @@ database:
     minSize: 1
     maxSize: 5
     maxWaitForConnection: 1s
+    hibernate.show_sql: false
 
 taskTypes:
   - id: "RES"

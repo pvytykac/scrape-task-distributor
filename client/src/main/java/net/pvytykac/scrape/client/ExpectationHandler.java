@@ -1,15 +1,5 @@
 package net.pvytykac.scrape.client;
 
-import com.google.common.collect.ImmutableMap;
-import org.apache.commons.lang3.StringUtils;
-import org.jsoup.nodes.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import pvytykac.net.scrape.model.v1.FailedExpectation;
-import pvytykac.net.scrape.model.v1.ScrapeExpectation;
-import pvytykac.net.scrape.model.v1.enums.ExpectationType;
-import pvytykac.net.scrape.model.v1.enums.Operator;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -17,9 +7,19 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class ExpectationHandler {
+import org.apache.commons.lang3.StringUtils;
+import org.jsoup.nodes.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-	private static final Logger LOG = LoggerFactory.getLogger(ExpectationHandler.class);
+import com.google.common.collect.ImmutableMap;
+
+import pvytykac.net.scrape.model.v1.FailedExpectation;
+import pvytykac.net.scrape.model.v1.ScrapeExpectation;
+import pvytykac.net.scrape.model.v1.enums.ExpectationType;
+import pvytykac.net.scrape.model.v1.enums.Operator;
+
+public class ExpectationHandler {
 
 	private final Map<Operator, OperatorHandler> operatorHandlers;
 	private final Map<ExpectationType, ExpectationTypeHandler> expectationTypeHandlers;
@@ -44,7 +44,6 @@ public class ExpectationHandler {
 	}
 
 	public List<FailedExpectation> processExpectations(ResponseWrapper response, List<ScrapeExpectation> expectations) {
-		LOG.info("processing '{}' expectations", expectations == null ? 0 : expectations.size());
 		return Optional.ofNullable(expectations).orElse(Collections.emptyList())
 				.stream()
 				.map(expectation -> processExpectation(response, expectation))
@@ -59,11 +58,6 @@ public class ExpectationHandler {
 
 		Optional<String> value = expTypeHandler.retrieveValue(response, expectation.getTarget());
 		boolean expectationMet = opHandler.matches(value, expectation.getExpectedValue());
-
-		LOG.info("processing expectation of type '{}' with target '{}', operator '{}', expected value: '{}' and " +
-						"expected result '{}'. Actual value '{}' and match was evaluated as '{}'", expectation.getType(),
-				expectation.getTarget(), expectation.getOperator(), expectation.getExpectedValue(),
-				expectation.getExpected(), value.orElse(null), expectationMet);
 
 		return expectationMet == expectation.getExpected()
 				? Optional.empty()

@@ -9,9 +9,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.pvytykac.scrape.util.ModelBuilder;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import net.pvytykac.scrape.util.ModelBuilder;
 import pvytykac.net.scrape.model.v1.ClientException.ClientExceptionBuilder;
 import pvytykac.net.scrape.model.v1.FailedExpectation;
 import pvytykac.net.scrape.model.v1.ScrapeError;
@@ -44,8 +44,10 @@ public class ScrapeTaskProcessor {
 		steps.sort(Comparator.comparingInt(ScrapeStep::getSequenceNumber));
 
 		try {
+			LOG.debug("Executing task '{}' type '{}'", task.getTaskUuid(), task.getTaskType());
+
 			for (ScrapeStep step: steps) {
-				LOG.info("Executing step '{}' for task '{}' of type '{}'", step.getSequenceNumber(), task.getTaskUuid(),
+				LOG.debug("Executing step '{}' for task '{}' of type '{}'", step.getSequenceNumber(), task.getTaskUuid(),
 						task.getTaskType());
 
 				++progress;
@@ -57,16 +59,23 @@ public class ScrapeTaskProcessor {
 						step.getExpectations());
 
 				if (!failedExpectations.isEmpty()) {
-					LOG.error("Failed expectations: '{}'", failedExpectations.size());
+					LOG.debug("There are '{}' failed expectations for task '{}' and step '{}': {}", failedExpectations.size(),
+							task.getTaskUuid(), step.getSequenceNumber(), failedExpectations.stream()
+									.map(fe -> String.format("[id %d was %s]", fe.getExpectation().getId(), fe.getActual()))
+									.toArray());
+
 					return failedExpectationResult(sessionUuid, task, step, failedExpectations, response.time());
 				}
 
 				if (progress < steps.size()) {
 					parameters.putAll(scrapeHandler.processScrapes(response, step.getScrape()));
 				}
+
+				LOG.debug("Step '{}' for task '{}' of type '{}' was processed successfully", step.getSequenceNumber(),
+						task.getTaskUuid(), task.getTaskType());
 			}
 
-			LOG.info("Successfully processed task '{}' of type '{}'", task.getTaskUuid(), task.getTaskType());
+			LOG.info("Task '{}' of type '{}' was processed successfully", task.getTaskUuid(), task.getTaskType());
 			return successResult(sessionUuid, task, response);
 		} catch (Exception ex) {
 			LOG.error("Client error while processing task '{}' of type '{}'", task.getTaskUuid(), task.getTaskType(), ex);

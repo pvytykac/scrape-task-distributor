@@ -35,7 +35,7 @@ public class ScrapeTasksResource {
 	}
 
 	@UnitOfWork
-	@GET
+	@POST
 	public Response getTask(@QueryParam("taskType") String taskType) {
 		Optional<ScrapeTask> optional = taskDistributionFacade.getScrapeTask(taskType);
 
