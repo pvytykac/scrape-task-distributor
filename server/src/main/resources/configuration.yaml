@@ -8,8 +8,8 @@ server:
   requestLog:
     appenders:
     - type: file
-      currentLogFilename: server-logs/access.log
-      archivedLogFilenamePattern: server-logs/access.%d.log
+      currentLogFilename: logs/access.log
+      archivedLogFilenamePattern: logs/access.%d.log
       archive: true
       archivedFileCount: 7
 
@@ -20,21 +20,21 @@ logging:
       level: TRACE
       appenders:
         - type: file
-          currentLogFilename: server-logs/sql.log
-          archivedLogFilenamePattern: server-logs/sql.%d.log.gz
+          currentLogFilename: logs/sql.log
+          archivedLogFilenamePattern: logs/sql.%d.log.gz
           archivedFileCount: 7
     pvytykac.net:
       level: DEBUG
       appenders:
         - type: file
-          currentLogFilename: server-logs/application.log
-          archivedLogFilenamePattern: server-logs/application.%d.log.gz
+          currentLogFilename: logs/application.log
+          archivedLogFilenamePattern: logs/application.%d.log.gz
           archivedFileCount: 7
   appenders:
   - type: file
     threshold: WARN
-    currentLogFilename: server-logs/error.log
-    archivedLogFilenamePattern: server-logs/error.%d.log.gz
+    currentLogFilename: logs/error.log
+    archivedLogFilenamePattern: logs/error.%d.log.gz
     archivedFileCount: 7
 
 metrics:
@@ -53,7 +53,6 @@ database:
     minSize: 1
     maxSize: 5
     maxWaitForConnection: 1s
-    hibernate.show_sql: true
 
 taskTypes:
   - id: "RES"

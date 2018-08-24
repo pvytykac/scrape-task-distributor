@@ -1,6 +1,6 @@
 <configuration>
     <appender name="APPLICATION_LOG" class="ch.qos.logback.core.FileAppender">
-        <file>client-logs/client.log</file>
+        <file>logs/client.log</file>
 
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>

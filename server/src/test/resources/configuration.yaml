@@ -8,8 +8,8 @@ server:
   requestLog:
     appenders:
     - type: file
-      currentLogFilename: server-logs/access.test.log
-      archivedLogFilenamePattern: server-logs/access.test.%d.log
+      currentLogFilename: logs/access.test.log
+      archivedLogFilenamePattern: logs/access.test.%d.log
       archive: true
       archivedFileCount: 7
 
@@ -20,21 +20,21 @@ logging:
       level: TRACE
       appenders:
         - type: file
-          currentLogFilename: server-logs/sql.test.log
-          archivedLogFilenamePattern: server-logs/sql.test.%d.log.gz
+          currentLogFilename: logs/sql.test.log
+          archivedLogFilenamePattern: logs/sql.test.%d.log.gz
           archivedFileCount: 7
     pvytykac.net:
       level: DEBUG
       appenders:
         - type: file
-          currentLogFilename: server-logs/application.test.log
-          archivedLogFilenamePattern: server-logs/application.test.%d.log.gz
+          currentLogFilename: logs/application.test.log
+          archivedLogFilenamePattern: logs/application.test.%d.log.gz
           archivedFileCount: 7
   appenders:
   - type: file
     threshold: WARN
-    currentLogFilename: server-logs/error.test.log
-    archivedLogFilenamePattern: server-logs/error.test.%d.log.gz
+    currentLogFilename: logs/error.test.log
+    archivedLogFilenamePattern: logs/error.test.%d.log.gz
     archivedFileCount: 7
 
 metrics:
@@ -53,7 +53,6 @@ database:
     minSize: 1
     maxSize: 5
     maxWaitForConnection: 1s
-    showSql: true
 
 taskTypes:
   - id: "RES"

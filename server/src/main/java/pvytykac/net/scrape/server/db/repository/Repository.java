@@ -10,4 +10,8 @@ public interface Repository<ID, ENTITY extends Dbo<ID>> {
 
 	void save(ENTITY entity);
 
+	void delete(ENTITY entity);
+
+	boolean delete(ID id);
+
 }

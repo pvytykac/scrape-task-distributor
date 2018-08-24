@@ -1,6 +1,5 @@
 package pvytykac.net.scrape.server.db.repository.impl;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.hibernate.Session;
@@ -10,11 +9,11 @@ import org.hibernate.query.Query;
 import pvytykac.net.scrape.server.db.repository.Dbo;
 import pvytykac.net.scrape.server.db.repository.Repository;
 
-public abstract class AbstractRepository<ID, ENTITY extends Dbo<ID>> implements Repository<ID, ENTITY> {
+abstract class AbstractRepository<ID, ENTITY extends Dbo<ID>> implements Repository<ID, ENTITY> {
 
 	private final SessionFactory sessionFactory;
 
-	public AbstractRepository(SessionFactory sessionFactory) {
+	protected AbstractRepository(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 
@@ -27,7 +26,7 @@ public abstract class AbstractRepository<ID, ENTITY extends Dbo<ID>> implements 
 
 	@Override
 	public Optional<ENTITY> findOptional(ID id) {
-		return getSession().createQuery("FROM " + getEntityClass().getSimpleName() + " alias WHERE alias.id = :id", getEntityClass())
+		return query("FROM " + getEntityName() + " alias WHERE alias.id = :id")
 				.setParameter("id", id)
 				.list()
 				.stream()
@@ -39,6 +38,18 @@ public abstract class AbstractRepository<ID, ENTITY extends Dbo<ID>> implements 
 		getSession().saveOrUpdate(entity);
 	}
 
+	@Override
+	public void delete(ENTITY entity) {
+		getSession().delete(entity);
+	}
+
+	@Override
+	public boolean delete(ID id) {
+		return untypedQuery("DELETE alias FROM " + getEntityName() + " alias WHERE alias.id = :id")
+				.setParameter("id", id)
+				.executeUpdate() == 1;
+	}
+
 	protected Query<ENTITY> query(String query) {
 		return getSession().createQuery(query, getEntityClass());
 	}
@@ -47,12 +58,11 @@ public abstract class AbstractRepository<ID, ENTITY extends Dbo<ID>> implements 
 		return getSession().createQuery(query);
 	}
 
-	protected List<ENTITY> list(Query<ENTITY> query) {
-		return query.list();
+	private String getEntityName() {
+		return getEntityClass().getSimpleName();
 	}
 
-
-	protected Session getSession() {
+	private Session getSession() {
 		return sessionFactory.getCurrentSession();
 	}
 }
