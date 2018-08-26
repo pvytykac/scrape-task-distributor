@@ -19,12 +19,18 @@ public class TaskTypeConfiguration {
     @NotBlank
     private String className;
 
+    private String offsetIco;
+
     public String getId() {
         return id;
     }
 
 	public String getClassName() {
 		return className;
+	}
+
+	public String getOffsetIco() {
+		return offsetIco;
 	}
 
 	@ValidationMethod(message = "class does not exist or doesn't implement TaskType")

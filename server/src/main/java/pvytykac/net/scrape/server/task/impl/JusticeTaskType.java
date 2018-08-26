@@ -14,8 +14,8 @@ import pvytykac.net.scrape.server.db.repository.impl.RepositoryFacade;
 
 public class JusticeTaskType extends AbstractTaskType {
 
-	public JusticeTaskType(String id, RepositoryFacade facade) {
-		super(id, facade);
+	public JusticeTaskType(String id, RepositoryFacade facade, String offsetIco) {
+		super(id, facade, offsetIco);
 	}
 
 	@Override

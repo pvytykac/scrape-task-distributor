@@ -20,12 +20,12 @@ abstract class AbstractTaskType implements TaskType {
 
 	private final String id;
 	protected final RepositoryFacade facade;
-
 	private String offsetIco;
 
-	protected AbstractTaskType(String id, RepositoryFacade facade) {
+	protected AbstractTaskType(String id, RepositoryFacade facade, String offsetIco) {
 		this.id = id;
 		this.facade = facade;
+		this.offsetIco = offsetIco;
 	}
 
 	@Override

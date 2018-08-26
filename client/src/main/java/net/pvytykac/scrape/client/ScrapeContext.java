@@ -2,46 +2,53 @@ package net.pvytykac.scrape.client;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+
+import okhttp3.OkHttpClient;
 
 public class ScrapeContext {
 
-	private final Map<String, Long> scrapeTypeTimeouts;
+	private final OkHttpClient http;
+	private final ScrapeTaskDistributorClientV1 client;
+	private final Map<String, Long> timeouts;
 
-	public ScrapeContext() {
-		this.scrapeTypeTimeouts = new HashMap<>();
+	public ScrapeContext(OkHttpClient http, ScrapeTaskDistributorClientV1 client) {
+		this.http = http;
+		this.client = client;
+		this.timeouts = new HashMap<>(20);
 	}
 
-	public Set<String> getIgnoredTypes() {
-		return scrapeTypeTimeouts.entrySet().stream()
-				.filter(entry -> entry.getValue() >= nowUtcMs())
-				.map(Map.Entry::getKey)
-				.collect(Collectors.toSet());
+	public OkHttpClient getHttp() {
+		return http;
 	}
 
-	public void addTimeout(String taskType, Long timeout) {
-		scrapeTypeTimeouts.put(taskType, timeout);
+	public ScrapeTaskDistributorClientV1 getClient() {
+		return client;
 	}
 
-	private Long nowUtcMs() {
+	public void setTimeout(String taskType, Long timeout) {
+		if (timeouts.get(taskType) == null || timeouts.get(taskType) < nowUtcMs()) {
+			synchronized (timeouts) {
+				if (timeouts.get(taskType) == null || timeouts.get(taskType) < nowUtcMs()) {
+					timeouts.put(taskType, timeout);
+				}
+			}
+		}
+	}
+
+	public Optional<Long> getNextTimeoutReset(String taskType) {
+		return timeouts.entrySet().stream()
+				.filter(e -> e.getKey().equals(taskType))
+				.map(Map.Entry::getValue)
+				.findFirst()
+				.map(timeout -> timeout - nowUtcMs())
+				.filter(timeout -> timeout > 0L);
+	}
+
+	private long nowUtcMs() {
 		return Instant.now(Clock.systemUTC())
 				.toEpochMilli();
-	}
-
-	public Optional<Long> getNextTimeoutReset() {
-		List<Long> timeouts = new ArrayList<>(scrapeTypeTimeouts.values());
-		Collections.sort(timeouts);
-
-		return timeouts.stream()
-				.findFirst()
-				.map(timeout -> timeout - System.currentTimeMillis())
-				.filter(timeout -> timeout > 0);
 	}
 }

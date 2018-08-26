@@ -49,8 +49,8 @@ public class ResTaskType extends AbstractTaskType {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ResTaskType.class);
 
-	public ResTaskType(String id, RepositoryFacade facade) {
-		super(id, facade);
+	public ResTaskType(String id, RepositoryFacade facade, String offsetIco) {
+		super(id, facade, offsetIco);
 	}
 
 	@Override
@@ -197,6 +197,7 @@ public class ResTaskType extends AbstractTaskType {
 								.withExpected(true)
 								.build())
 						.addExpectation(new ScrapeExpectation.ScrapeExpectationBuilder()
+								.withId(2)
 								.withType(HEADER)
 								.withTarget("Content-Type")
 								.withExpectedValue("text/html")

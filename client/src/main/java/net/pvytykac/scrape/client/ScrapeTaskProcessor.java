@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ public class ScrapeTaskProcessor {
 		this.scrapeHandler = new ScrapeHandler();
 	}
 
-	public ScrapeResultRepresentation processTask(String sessionUuid, ScrapeTask task) {
+	public ScrapeResultRepresentation processTask(ScrapeTask task) {
 		Map<String, String> parameters = new HashMap<>(task.getParameters());
 		int progress = 0;
 		ResponseWrapper response = null;
@@ -64,7 +65,7 @@ public class ScrapeTaskProcessor {
 									.map(fe -> String.format("[id %d was %s]", fe.getExpectation().getId(), fe.getActual()))
 									.toArray());
 
-					return failedExpectationResult(sessionUuid, task, step, failedExpectations, response.time());
+					return failedExpectationResult(task, step, failedExpectations, response.time());
 				}
 
 				if (progress < steps.size()) {
@@ -76,37 +77,37 @@ public class ScrapeTaskProcessor {
 			}
 
 			LOG.info("Task '{}' of type '{}' was processed successfully", task.getTaskUuid(), task.getTaskType());
-			return successResult(sessionUuid, task, response);
+			return successResult(task, response);
 		} catch (Exception ex) {
 			LOG.error("Client error while processing task '{}' of type '{}'", task.getTaskUuid(), task.getTaskType(), ex);
-			return clientErrorResult(sessionUuid, task, currentStep, response, ex);
+			return clientErrorResult(task, currentStep, response, ex);
 		}
 	}
 
-	private static ScrapeResultRepresentation successResult(String sessionUuid, ScrapeTask task, ResponseWrapper response) {
+	private static ScrapeResultRepresentation successResult(ScrapeTask task, ResponseWrapper response) {
 		ScrapeResult.ScrapeResultBuilder result = new ScrapeResult.ScrapeResultBuilder()
 				.withContentType(response.header("Content-Type"))
 				.withHeaders(response.headers())
 				.withPayload(response.body())
 				.withStatusCode(response.code());
 
-		return getDefaultResult(sessionUuid, task, response.time())
+		return getDefaultResult(task, response.time())
 				.withResult(result)
 				.build();
 	}
 
-	private static ScrapeResultRepresentation failedExpectationResult(String sessionUuid, ScrapeTask task,
+	private static ScrapeResultRepresentation failedExpectationResult(ScrapeTask task,
 			ScrapeStep step, List<FailedExpectation> failedExpectations, Long time) {
 		ModelBuilder<ScrapeError> error = new ScrapeError.ScrapeErrorBuilder()
 				.withFailedExpectations(failedExpectations)
 				.withScrapeStep(step);
 
-		return getDefaultResult(sessionUuid, task, time)
+		return getDefaultResult(task, time)
 				.withError(error)
 				.build();
 	}
 
-	private static ScrapeResultRepresentation clientErrorResult(String sessionUuid, ScrapeTask task,
+	private static ScrapeResultRepresentation clientErrorResult(ScrapeTask task,
 			ScrapeStep step, ResponseWrapper response, Exception ex) {
 		String payload = null;
 		Integer code = response == null ? null : response.code();
@@ -120,17 +121,17 @@ public class ScrapeTaskProcessor {
 				.withStatusCode(code)
 				.withPayload(payload);
 
-		return getDefaultResult(sessionUuid, task, response == null ? System.currentTimeMillis() : response.time())
+		return getDefaultResult(task, response == null ? System.currentTimeMillis() : response.time())
 				.withError(new ScrapeError.ScrapeErrorBuilder()
 						.withClientException(clientException)
 						.withScrapeStep(step))
 				.build();
 	}
 
-	private static ScrapeResultRepresentationBuilder getDefaultResult(String sessionUuid, ScrapeTask task, Long requestTime) {
+	private static ScrapeResultRepresentationBuilder getDefaultResult(ScrapeTask task, Long requestTime) {
 		return new ScrapeResultRepresentationBuilder()
 				.withTaskType(task.getTaskType())
-				.withSessionId(sessionUuid)
+				.withSessionId(UUID.randomUUID().toString())
 				.withTaskId(task.getTaskUuid())
 				.withPart(1)
 				.withTotalParts(1)

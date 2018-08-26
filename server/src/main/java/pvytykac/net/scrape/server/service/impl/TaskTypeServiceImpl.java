@@ -32,8 +32,8 @@ public class TaskTypeServiceImpl implements TaskTypeService {
 		try {
 			@SuppressWarnings("unchecked")
 			Class<TaskType> clazz = (Class<TaskType>) Class.forName(cfg.getClassName());
-			return clazz.getDeclaredConstructor(String.class, RepositoryFacade.class)
-					.newInstance(cfg.getId(), facade);
+			return clazz.getDeclaredConstructor(String.class, RepositoryFacade.class, String.class)
+					.newInstance(cfg.getId(), facade, cfg.getOffsetIco());
 		} catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException
 				| IllegalAccessException ex) {
 			throw new RuntimeException(ex);
