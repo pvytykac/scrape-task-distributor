@@ -3,6 +3,7 @@ package pvytykac.net.scrape.model.v1;
 import net.pvytykac.scrape.util.ModelBuilder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public final class ScrapeTask {
 
     private String taskUuid;
     private String taskType;
-    private Map<String, String> parameters;
+    private Map<String, Parameter> parameters;
     private List<ScrapeStep> steps;
 
     // used by jackson
@@ -39,7 +40,7 @@ public final class ScrapeTask {
         return taskType;
     }
 
-    public Map<String, String> getParameters() {
+    public Map<String, Parameter> getParameters() {
         return asImmutableMap(parameters);
     }
 
@@ -51,7 +52,7 @@ public final class ScrapeTask {
         
         private String taskUuid;
         private String taskType;
-        private Map<String, String> parameters;
+        private Map<String, Parameter> parameters;
         private List<ScrapeStep> steps;
 
         private String getTaskUuid() {
@@ -62,7 +63,7 @@ public final class ScrapeTask {
             return taskType;
         }
 
-        private Map<String, String> getParameters() {
+        private Map<String, Parameter> getParameters() {
             return parameters;
         }
 
@@ -80,9 +81,17 @@ public final class ScrapeTask {
 			return this;
         }
 
-        public ScrapeTaskBuilder withParameters(Map<String, String> params) {
+        public ScrapeTaskBuilder withParameters(Map<String, Parameter> params) {
             this.parameters = params;
 			return this;
+        }
+
+        public ScrapeTaskBuilder addParameter(String key, Parameter parameter) {
+            if (parameters == null) {
+                parameters = new HashMap<>();
+            }
+            parameters.put(key, parameter);
+            return this;
         }
 
         public ScrapeTaskBuilder withSteps(List<ScrapeStep> steps) {

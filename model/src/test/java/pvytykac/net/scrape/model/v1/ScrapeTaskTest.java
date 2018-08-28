@@ -23,7 +23,7 @@ public class ScrapeTaskTest extends JsonTest {
         ScrapeTask task = new ScrapeTask.ScrapeTaskBuilder()
                 .withTaskUuid("task1")
                 .withTaskType("TASK_TYPE")
-                .withParameters(Collections.singletonMap("a", "b"))
+                .withParameters(Collections.singletonMap("a", mockModelInstance(Parameter.class)))
                 .withSteps(Collections.singletonList(mockModelInstance(ScrapeStep.class)))
                 .build();
 
@@ -31,7 +31,8 @@ public class ScrapeTaskTest extends JsonTest {
 
         assertThat(json.getString("taskUuid"), is(task.getTaskUuid()));
         assertThat(json.getString("taskType"), is("TASK_TYPE"));
-        assertThat(json.getJSONObject("parameters").toMap(), is(task.getParameters()));
+        assertThat(json.getJSONObject("parameters"), notNullValue());
+        assertThat(json.getJSONObject("parameters").get("a"), notNullValue());
         assertThat(json.getJSONArray("steps").length(), is(1));
     }
 
@@ -40,7 +41,7 @@ public class ScrapeTaskTest extends JsonTest {
         JSONObject json = new JSONObject()
                 .put("taskUuid", "taskB")
                 .put("taskType", "TMP")
-                .put("parameters", new JSONObject())
+                .put("parameters", new JSONObject().put("b", new JSONObject()))
                 .put("steps", new JSONArray());
 
         ScrapeTask task = deserialize(json, ScrapeTask.class);
@@ -48,6 +49,7 @@ public class ScrapeTaskTest extends JsonTest {
         assertThat(task.getTaskUuid(), is(json.getString("taskUuid")));
         assertThat(task.getTaskType(), is(json.getString("taskType")));
         assertThat(task.getParameters(), notNullValue());
+        assertThat(task.getParameters().get("b"), notNullValue());
         assertThat(task.getSteps(), notNullValue());
     }
 }
