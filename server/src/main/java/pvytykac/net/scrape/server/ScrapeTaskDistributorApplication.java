@@ -1,11 +1,14 @@
 package pvytykac.net.scrape.server;
 
+import java.util.Set;
+
+import org.hibernate.SessionFactory;
+
 import io.dropwizard.Application;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import org.hibernate.SessionFactory;
 import pvytykac.net.scrape.server.db.SessionManager;
 import pvytykac.net.scrape.server.db.model.ico.Ico;
 import pvytykac.net.scrape.server.db.model.res.ResAttribute;
@@ -73,5 +76,9 @@ public class ScrapeTaskDistributorApplication extends Application<ScrapeTaskDist
         environment.getApplicationContext().addBean(sessionFactory);
         environment.getApplicationContext().addBean(repositoryFacade);
         environment.getApplicationContext().addBean(sessionManager);
+
+        // filters
+		Set<String> supportedVersions = configuration.getSupportedClientVersions();
+        environment.servlets().addFilter("user-agent-filter", new UserAgentFilter(supportedVersions));
     }
 }

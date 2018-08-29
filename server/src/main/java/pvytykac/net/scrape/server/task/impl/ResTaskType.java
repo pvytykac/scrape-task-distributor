@@ -28,11 +28,14 @@ import com.google.common.collect.ImmutableMap;
 
 import pvytykac.net.scrape.model.v1.ClientException;
 import pvytykac.net.scrape.model.v1.FailedExpectation;
+import pvytykac.net.scrape.model.v1.Parameter;
+import pvytykac.net.scrape.model.v1.ParameterType;
 import pvytykac.net.scrape.model.v1.Scrape;
 import pvytykac.net.scrape.model.v1.ScrapeExpectation;
 import pvytykac.net.scrape.model.v1.ScrapeResult;
 import pvytykac.net.scrape.model.v1.ScrapeStep;
 import pvytykac.net.scrape.model.v1.ScrapeTask;
+import pvytykac.net.scrape.model.v1.enums.Type;
 import pvytykac.net.scrape.server.db.model.ico.Ico;
 import pvytykac.net.scrape.server.db.model.res.ResAttribute;
 import pvytykac.net.scrape.server.db.model.res.ResAttributeValue;
@@ -179,10 +182,17 @@ public class ResTaskType extends AbstractTaskType {
 
 	@Override
 	protected ScrapeTask createTaskForNewIco(String ico) {
+		Map<String, Parameter> parameters = ImmutableMap.of("ico", new Parameter.Builder()
+				.withType(new ParameterType.Builder()
+						.withRootType(Type.STRING)
+						.build())
+				.withValue(ico)
+				.build());
+
 		return new ScrapeTask.ScrapeTaskBuilder()
 				.withTaskUuid(UUID.randomUUID().toString())
 				.withTaskType(getId())
-				.withParameters(ImmutableMap.of("ico", ico))
+				.withParameters(parameters)
 				.addStep(new ScrapeStep.ScrapeStepBuilder()
 						.withSequenceNumber(1)
 						.withMethod(POST)
@@ -249,10 +259,17 @@ public class ResTaskType extends AbstractTaskType {
 
 	@Override
 	protected ScrapeTask createTaskForKnownIco(Ico ico) {
+		Map<String, Parameter> parameters = ImmutableMap.of("ico", new Parameter.Builder()
+				.withType(new ParameterType.Builder()
+						.withRootType(Type.STRING)
+						.build())
+				.withValue(ico.getId())
+				.build());
+
 		return new ScrapeTask.ScrapeTaskBuilder()
 				.withTaskUuid(UUID.randomUUID().toString())
 				.withTaskType(getId())
-				.withParameters(ImmutableMap.of("id", String.valueOf(ico.getResId())))
+				.withParameters(parameters)
 				.addStep(new ScrapeStep.ScrapeStepBuilder()
 						.withSequenceNumber(1)
 						.withMethod(GET)

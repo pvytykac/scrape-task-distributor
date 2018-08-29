@@ -42,6 +42,7 @@ public class Main {
 		return new OkHttpClient.Builder()
 				.followRedirects(false)
 				.followSslRedirects(false)
+				.addInterceptor(new UserAgentInterceptor())
 				.build();
 	}
 }

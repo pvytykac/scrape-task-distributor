@@ -8,6 +8,7 @@ import io.dropwizard.db.DataSourceFactory;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Paly
@@ -24,11 +25,19 @@ public class ScrapeTaskDistributorConfiguration extends Configuration {
 	@NotNull
 	private List<TaskTypeConfiguration> taskTypes;
 
+	@NotEmpty
+	@NotNull
+	private Set<String> supportedClientVersions;
+
 	public DataSourceFactory getDatabase() {
 		return database;
 	}
 
 	public List<TaskTypeConfiguration> getTaskTypes() {
 		return taskTypes;
+	}
+
+	public Set<String> getSupportedClientVersions() {
+		return supportedClientVersions;
 	}
 }
