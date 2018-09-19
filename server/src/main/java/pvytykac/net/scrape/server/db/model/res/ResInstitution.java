@@ -1,22 +1,24 @@
 package pvytykac.net.scrape.server.db.model.res;
 
-import com.google.common.collect.ImmutableList;
-import org.joda.time.DateTime;
-import pvytykac.net.scrape.server.db.model.DboBuilder;
-import pvytykac.net.scrape.server.db.repository.Dbo;
+import static net.pvytykac.scrape.util.ModelBuilderUtil.asImmutableList;
+
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.util.List;
 
-import static net.pvytykac.scrape.util.ModelBuilderUtil.asImmutableList;
+import org.joda.time.DateTime;
+
+import pvytykac.net.scrape.server.db.model.DboBuilder;
+import pvytykac.net.scrape.server.db.repository.Dbo;
 
 @Entity
 @Table(name = "res_institution")
@@ -52,7 +54,7 @@ public class ResInstitution implements Dbo<Integer> {
 	@JoinColumn(name = "unit_id", referencedColumnName = "code")
 	private ResUnit unit;
 
-	@ManyToMany(cascade = CascadeType.ALL)
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(
 			name = "res_institution_attribute",
 			joinColumns = @JoinColumn(name = "institution_id", referencedColumnName = "id"),

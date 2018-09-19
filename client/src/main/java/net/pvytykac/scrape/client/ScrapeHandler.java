@@ -1,85 +1,54 @@
 package net.pvytykac.scrape.client;
 
-import com.google.common.collect.ImmutableMap;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import pvytykac.net.scrape.model.v1.Scrape;
-import pvytykac.net.scrape.model.v1.enums.ScrapeType;
 
-import java.util.AbstractMap.SimpleEntry;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import pvytykac.net.scrape.model.v1.ScrapeDefinition;
 
 public class ScrapeHandler {
 
-	private final Map<ScrapeType, ScrapeStrategy> scrapers;
-
-	public ScrapeHandler() {
-		this.scrapers = ImmutableMap.<ScrapeType, ScrapeStrategy>builder()
-				.put(ScrapeType.HEADER, (response, target) -> Optional.ofNullable(response.header(target)))
-				.put(ScrapeType.HREF, HREF_SCRAPER)
-				.build();
+	public Container processScrape(ResponseWrapper response, ScrapeDefinition scrape, Container parameters) {
+		Element document = response.html();
+		processRecursive(scrape, parameters, new Elements(document));
+		return parameters;
 	}
 
-	public Map<String, String> processScrapes(ResponseWrapper response, List<Scrape> scrapes) {
-		return Optional.ofNullable(scrapes)
-				.orElse(Collections.emptyList())
-				.stream()
-				.map(scrape -> processScrape(response, scrape))
-				.filter(Optional::isPresent)
-				.map(Optional::get)
-				.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-	}
-
-	private Optional<Entry<String, String>> processScrape(ResponseWrapper response, Scrape scrape) {
-		return scrapers.get(scrape.getType())
-				.scrape(response, scrape.getTarget())
-				.map(value -> new SimpleEntry<>(scrape.getStoreAs(), value));
-	}
-
-	interface ScrapeStrategy {
-		Optional<String> scrape(ResponseWrapper response, String target);
-	}
-
-	private static final CssScrapeStrategy HREF_SCRAPER = new CssAttributeScrapeStrategy("href");
-
-	private abstract static class CssScrapeStrategy implements ScrapeStrategy {
-
-		abstract Optional<String> toString(Optional<Elements> elements);
-
-		@Override
-		public Optional<String> scrape(ResponseWrapper response, String target) {
-			return toString(Optional.ofNullable(response.html().select(target)));
+	private static void processRecursive(ScrapeDefinition scrape, Container container, Elements elements) {
+		switch (scrape.getScrapeType()) {
+		case ELEMENT:
+			elements.stream().findFirst().ifPresent(child -> scrape.getSubDefinitions().forEach(
+					subScrape -> processRecursive(subScrape, container,
+							new Elements(child.selectFirst(scrape.getSelector())))));
+			break;
+		case LIST:
+			elements.forEach(el -> {
+				Container subContainer = Container.listContainer();
+				container.put(scrape.getStoreAs(), subContainer);
+				if (scrape.getSubDefinitions() != null) {
+					Elements children = scrape.getSelector() == null ? elements : el.select(scrape.getSelector());
+					scrape.getSubDefinitions()
+							.forEach(subScrape -> processRecursive(subScrape, subContainer, children));
+				}
+			});
+			break;
+		case ATTRIBUTE:
+			elements.forEach(el -> container.put(scrape.getStoreAs(), el.attr(scrape.getSelector())));
+			break;
+		case TEXT:
+			elements.forEach(el -> container.put(scrape.getStoreAs(), el.text()));
+			break;
+		case OBJECT:
+			elements.forEach(el -> {
+				Container subContainer = Container.objectContainer();
+				container.put(scrape.getStoreAs(), subContainer);
+				if (scrape.getSubDefinitions() != null) {
+					scrape.getSubDefinitions()
+							.forEach(subScrape -> processRecursive(subScrape, subContainer, new Elements(el)));
+				}
+			});
+			break;
+		default:
+			throw new IllegalStateException("unsupported scrape type: '" + scrape.getScrapeType() + "'");
 		}
 	}
-
-	private static final class CssAttributeScrapeStrategy extends CssScrapeStrategy {
-
-		private final String attribute;
-
-		public CssAttributeScrapeStrategy(String attribute) {
-			this.attribute = attribute;
-		}
-
-		@Override
-		Optional<String> toString(Optional<Elements> elements) {
-			String attributes = elements.map(Elements::stream)
-					.orElse(Stream.empty())
-					.map(el -> el.attr(attribute))
-					.filter(Objects::nonNull)
-					.reduce("", (acc, attr) -> acc + attr + ",");
-
-			attributes = attributes.substring(0, attributes.length() - 1);
-
-			return attributes.trim().isEmpty()
-					? Optional.empty()
-					: Optional.of(attributes);
-		}
-	}
-
 }

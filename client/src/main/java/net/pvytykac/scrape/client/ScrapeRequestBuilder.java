@@ -6,14 +6,15 @@ import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import pvytykac.net.scrape.model.v1.Parameter;
 import pvytykac.net.scrape.model.v1.ScrapeStep;
 
 public class ScrapeRequestBuilder {
 
 	private final ScrapeStep step;
-	private final Map<String, String> parameters;
+	private final Map<String, Parameter> parameters;
 
-	public ScrapeRequestBuilder(ScrapeStep step, Map<String, String> parameters) {
+	public ScrapeRequestBuilder(ScrapeStep step, Map<String, Parameter> parameters) {
 		this.step = step;
 		this.parameters = parameters;
 	}
@@ -46,7 +47,7 @@ public class ScrapeRequestBuilder {
 				? null
 				: parameters.entrySet().stream()
 						.reduce(original,
-								(acc, entry) -> acc.replaceAll("\\$\\{" + entry.getKey() + "}", entry.getValue()),
+								(acc, entry) -> acc.replaceAll("\\$\\{" + entry.getKey() + "}", entry.getValue().toString()),
 								(acc, result) -> result);
 	}
 
@@ -56,7 +57,6 @@ public class ScrapeRequestBuilder {
 				.method(getMethod(), getPayload())
 				.url(getUrl())
 				.build();
-
 	}
 
 }

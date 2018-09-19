@@ -8,7 +8,6 @@ import static pvytykac.net.scrape.model.v1.enums.HttpMethod.POST;
 import static pvytykac.net.scrape.model.v1.enums.Operator.CONTAINS;
 import static pvytykac.net.scrape.model.v1.enums.Operator.EQUALS;
 import static pvytykac.net.scrape.model.v1.enums.Operator.NOT_BLANK;
-import static pvytykac.net.scrape.model.v1.enums.ScrapeType.HREF;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,11 +29,12 @@ import pvytykac.net.scrape.model.v1.ClientException;
 import pvytykac.net.scrape.model.v1.FailedExpectation;
 import pvytykac.net.scrape.model.v1.Parameter;
 import pvytykac.net.scrape.model.v1.ParameterType;
-import pvytykac.net.scrape.model.v1.Scrape;
+import pvytykac.net.scrape.model.v1.ScrapeDefinition;
 import pvytykac.net.scrape.model.v1.ScrapeExpectation;
 import pvytykac.net.scrape.model.v1.ScrapeResult;
 import pvytykac.net.scrape.model.v1.ScrapeStep;
 import pvytykac.net.scrape.model.v1.ScrapeTask;
+import pvytykac.net.scrape.model.v1.enums.ScrapeType;
 import pvytykac.net.scrape.model.v1.enums.Type;
 import pvytykac.net.scrape.server.db.model.ico.Ico;
 import pvytykac.net.scrape.server.db.model.res.ResAttribute;
@@ -128,7 +128,8 @@ public class ResTaskType extends AbstractTaskType {
 
 		Map<String, ResAttribute> attributes = new HashMap<>();
 		List<ResAttributeValue> attributeValues = new ArrayList<>();
-		String attrId = null, attrName = null;
+		String attrId = null;
+		String attrName = null;
 		List<HtmlTableRow> attributeRows = document.getTableBySummary("atributy").getRows(1);
 		for (HtmlTableRow attributeRow: attributeRows) {
 			if (attributeRow.selectColumn(1).select("a").hasText()) {
@@ -221,10 +222,14 @@ public class ResTaskType extends AbstractTaskType {
 								.withOperator(NOT_BLANK)
 								.withExpected(true)
 								.build())
-						.addScrape(new Scrape.ScrapeBuilder()
-								.withType(HREF)
-								.withTarget("a[href^='detail.jsp?prajed_id=']")
-								.withStoreAs("detailHref")
+						.addScrape(new ScrapeDefinition.Builder()
+								.withScrapeType(ScrapeType.ELEMENT)
+								.withSelector("a[href^='detail.jsp?prajed_id=']")
+								.withSubDefinitions(Collections.singletonList(new ScrapeDefinition.Builder()
+										.withScrapeType(ScrapeType.ATTRIBUTE)
+										.withSelector("href")
+										.withStoreAs("detailHref")
+										.build()))
 								.build())
 						.build())
 				.addStep(new ScrapeStep.ScrapeStepBuilder()

@@ -30,7 +30,7 @@ public class ScrapeStepTest extends JsonTest {
                 .withHeaders(singletonMap("b", "c"))
                 .withPayload("{}")
                 .withExpectations(singletonList(mockModelInstance(ScrapeExpectation.class)))
-                .withScrape(singletonList(mockModelInstance(Scrape.class)))
+                .withScrape(singletonList(mockModelInstance(ScrapeDefinition.class)))
                 .build();
 
         JSONObject json = serialize(step);

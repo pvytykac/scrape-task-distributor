@@ -38,7 +38,7 @@ public final class ScrapeStep {
     private List<ScrapeExpectation> expectations;
 
     @Valid
-    private List<Scrape> scrape;
+    private List<ScrapeDefinition> scrape;
 
     // used by jackson
     private ScrapeStep() {
@@ -88,7 +88,7 @@ public final class ScrapeStep {
         return expectations;
     }
 
-    public List<Scrape> getScrape() {
+    public List<ScrapeDefinition> getScrape() {
         return scrape;
     }
 
@@ -102,7 +102,7 @@ public final class ScrapeStep {
         private Map<String, String> headers;
         private String payload;
         private List<ScrapeExpectation> expectations;
-        private List<Scrape> scrape;
+        private List<ScrapeDefinition> scrape;
 
         private Integer getSequenceNumber() {
             return sequenceNumber;
@@ -136,7 +136,7 @@ public final class ScrapeStep {
             return asImmutableList(expectations);
         }
 
-        private List<Scrape> getScrape() {
+        private List<ScrapeDefinition> getScrape() {
             return asImmutableList(scrape);
         }
 
@@ -188,12 +188,12 @@ public final class ScrapeStep {
             return this;
         }
 
-        public ScrapeStepBuilder withScrape(List<Scrape> scrape) {
+        public ScrapeStepBuilder withScrape(List<ScrapeDefinition> scrape) {
             this.scrape = scrape;
             return this;
         }
 
-        public ScrapeStepBuilder addScrape(Scrape scrape) {
+        public ScrapeStepBuilder addScrape(ScrapeDefinition scrape) {
             if (this.scrape == null) {
                 this.scrape = new ArrayList<>();
             }

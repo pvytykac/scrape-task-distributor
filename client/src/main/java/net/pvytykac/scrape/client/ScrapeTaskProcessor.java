@@ -2,9 +2,7 @@ package net.pvytykac.scrape.client;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -37,7 +35,7 @@ public class ScrapeTaskProcessor {
 	}
 
 	public ScrapeResultRepresentation processTask(ScrapeTask task) {
-		Map<String, String> parameters = new HashMap<>(task.getParameters());
+		Container parameters = Container.objectContainer(task.getParameters());
 		int progress = 0;
 		ResponseWrapper response = null;
 		ScrapeStep currentStep = null;
@@ -87,7 +85,7 @@ public class ScrapeTaskProcessor {
 	private static ScrapeResultRepresentation successResult(ScrapeTask task, ResponseWrapper response) {
 		ScrapeResult.ScrapeResultBuilder result = new ScrapeResult.ScrapeResultBuilder()
 				.withContentType(response.header("Content-Type"))
-				.withHeaders(response.headers())
+//				.withHeaders(response.headers())
 				.withPayload(response.body())
 				.withStatusCode(response.code());
 

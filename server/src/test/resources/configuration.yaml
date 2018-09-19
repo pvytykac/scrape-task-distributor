@@ -54,6 +54,8 @@ database:
     maxSize: 5
     maxWaitForConnection: 1s
 
+supportedClientVersions: [ "1.0.0", "1.0.1" ]
+
 taskTypes:
   - id: "RES"
     className: "pvytykac.net.scrape.server.task.impl.ResTaskType"

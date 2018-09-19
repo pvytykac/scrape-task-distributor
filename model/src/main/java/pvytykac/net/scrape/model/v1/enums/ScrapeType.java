@@ -6,6 +6,6 @@ package pvytykac.net.scrape.model.v1.enums;
  */
 public enum ScrapeType {
 
-    HEADER, HREF;
+    LIST, OBJECT, ELEMENT, TEXT, ATTRIBUTE;
 
 }

@@ -2,10 +2,8 @@ package net.pvytykac.scrape.client;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.AbstractMap.SimpleEntry;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,7 +18,6 @@ public class ResponseWrapper {
 	private String body;
 	private Document document;
 	private boolean bodyConsumed;
-	private Map<String, String> headers;
 
 	public ResponseWrapper(Response response) {
 		this.response = response;
@@ -46,20 +43,8 @@ public class ResponseWrapper {
 		return response.sentRequestAtMillis();
 	}
 
-	public Map<String, String> headers() {
-		if (headers == null) {
-			this.headers = response.headers().toMultimap()
-				.entrySet().stream()
-				.map(entry -> {
-					String flattenValues = entry.getValue()
-							.stream()
-							.reduce("", (acc, val) -> acc + val + ",");
-					return new SimpleEntry<>(entry.getKey(), flattenValues.substring(0, flattenValues.length() - 1));
-				})
-				.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-		}
-
-		return this.headers;
+	public Map<String, List<String>> headers() {
+		return response.headers().toMultimap();
 	}
 
 	public String body() {
@@ -78,7 +63,7 @@ public class ResponseWrapper {
 
 	public Document html() {
 		if (this.document == null) {
-			this.document = Jsoup.parse(body(), request().url().toString());
+			this.document = Jsoup.parse(body(), response == null ? "" : request().url().toString());
 		}
 
 		return this.document;
